@@ -1,0 +1,2210 @@
+<title>Plan Table</title>
+<meta name="author" content="Aarakshya Kandel">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: desktop review software. App bar | tool rail · drawing board · review panel | status bar.
+   One accent (review red) for selection and primary actions; green/amber/red only for review status. */
+:root{
+  --app:#eceff2; --mat:#e1e5e9; --dot:rgba(28,38,48,.13);
+  --chrome:#ffffff; --chrome-2:#f1f3f5; --chrome-3:#e7eaee; --field:#ffffff;
+  --ink:#1a1f24; --muted:#5d6873; --faint:#8a949e; --rule:#dde1e6; --rule-2:#c7ced5;
+  --redline:#c8361e; --redline-ink:#ffffff; --redline-soft:rgba(200,54,30,.09); --redline-line:rgba(200,54,30,.45);
+  --ok:#1d8048; --warn:#a2640f; --bad:#c8361e;
+  --sheet-mat:#f3f4f6; --toast-bg:#1a1f24; --toast-fg:#f4f5f6; --scrim:rgba(12,16,20,.45);
+  --shadow-sm:0 1px 2px rgba(16,24,32,.07),0 2px 8px rgba(16,24,32,.06);
+  --shadow:0 1px 2px rgba(16,24,32,.08),0 8px 24px rgba(16,24,32,.10);
+  --shadow-lg:0 4px 10px rgba(16,24,32,.10),0 18px 48px rgba(16,24,32,.18);
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --app:#0e1114; --mat:#15181c; --dot:rgba(200,214,228,.08);
+    --chrome:#1b1f24; --chrome-2:#242a30; --chrome-3:#2c333a; --field:#14171a;
+    --ink:#e6eaee; --muted:#9ba5af; --faint:#6f7a85; --rule:#2a3036; --rule-2:#3a424a;
+    --redline:#ff6b52; --redline-ink:#1a0b07; --redline-soft:rgba(255,107,82,.13); --redline-line:rgba(255,107,82,.5);
+    --ok:#4cc38a; --warn:#e3a33b; --bad:#ff6b52;
+    --sheet-mat:#101317; --toast-bg:#e6eaee; --toast-fg:#14181c; --scrim:rgba(0,0,0,.6);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 26px rgba(0,0,0,.45);
+    --shadow-lg:0 4px 12px rgba(0,0,0,.5),0 20px 50px rgba(0,0,0,.55);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --app:#0e1114; --mat:#15181c; --dot:rgba(200,214,228,.08);
+  --chrome:#1b1f24; --chrome-2:#242a30; --chrome-3:#2c333a; --field:#14171a;
+  --ink:#e6eaee; --muted:#9ba5af; --faint:#6f7a85; --rule:#2a3036; --rule-2:#3a424a;
+  --redline:#ff6b52; --redline-ink:#1a0b07; --redline-soft:rgba(255,107,82,.13); --redline-line:rgba(255,107,82,.5);
+  --ok:#4cc38a; --warn:#e3a33b; --bad:#ff6b52;
+  --sheet-mat:#101317; --toast-bg:#e6eaee; --toast-fg:#14181c; --scrim:rgba(0,0,0,.6);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 26px rgba(0,0,0,.45);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.5),0 20px 50px rgba(0,0,0,.55);
+  color-scheme:dark;
+}
+html{height:100%;box-sizing:border-box}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;height:100%;display:flex;flex-direction:column;background:var(--app);color:var(--ink);font:13px/1.45 var(--f-body);overflow:hidden;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--redline);outline-offset:2px}
+svg{flex:none}
+
+/* App bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-height:52px;padding:8px 16px;background:var(--chrome);border-bottom:1px solid var(--rule);flex:none}
+.brand{display:flex;align-items:center;gap:10px;margin-right:6px}
+.brand .mark{width:28px;height:28px;border-radius:7px;background:#1b2127;display:grid;place-items:center}
+.brand b{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.sub{font-size:12px;color:var(--muted);white-space:nowrap;padding-left:10px;border-left:1px solid var(--rule)}
+.tsep{width:1px;height:22px;background:var(--rule);margin:0 4px}
+.notice{font-size:12px;color:var(--ink);background:var(--redline-soft);border:1px solid var(--redline-line);padding:2px 9px;border-radius:999px;white-space:nowrap}
+.group{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;height:32px;font-size:13px;font-weight:500;padding:0 12px;border:1px solid var(--rule-2);background:var(--chrome);border-radius:6px;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.btn:hover:not(:disabled){background:var(--chrome-2)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink)}
+.btn.ghost:hover:not(:disabled){background:var(--chrome-2)}
+.btn.primary{background:var(--redline);color:var(--redline-ink);border-color:transparent;font-weight:600}
+.btn.primary:hover:not(:disabled){filter:brightness(1.07);background:var(--redline)}
+.btn[aria-pressed="true"]{background:var(--redline-soft);border-color:var(--redline-line)}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn svg{color:var(--muted)}
+.btn.primary svg{color:inherit}
+.btn .caret{margin-left:-2px;opacity:.7}
+.sel{height:32px;font-size:13px;padding:0 8px;border:1px solid var(--rule-2);border-radius:6px;background:var(--chrome)}
+.badge{font:600 10px/16px var(--f-mono);min-width:16px;text-align:center;background:var(--redline);color:var(--redline-ink);border-radius:8px;padding:0 5px;font-variant-numeric:tabular-nums}
+.badge:empty{display:none}
+.ib{width:28px;height:28px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:5px;cursor:pointer;flex:none;padding:0}
+.ib:hover:not(:disabled){background:var(--chrome-2);color:var(--ink)}
+.ib:disabled{opacity:.35;cursor:default}
+.ib.lg{width:32px;height:32px;border-radius:6px}
+@media (max-width:1020px){.sub,.lbl-md{display:none}}
+@media (max-width:640px){.top{padding:8px 16px}.lbl-sm{display:none}.btn{padding:0 9px}}
+
+/* Workspace */
+main{flex:1;min-height:0;display:flex;gap:10px;padding:10px 16px;position:relative}
+.rail{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;background:var(--chrome);border:1px solid var(--rule);border-radius:10px;flex:none;overflow:auto;box-shadow:var(--shadow-sm)}
+.tb{width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;flex:none;padding:0;position:relative}
+.tb:hover:not(:disabled){background:var(--chrome-2);color:var(--ink)}
+.tb[aria-pressed="true"]{background:var(--ink);color:var(--chrome)}
+.tb[data-color][aria-pressed="true"],.tb[data-hover][aria-pressed="true"]{background:var(--chrome-3);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.tb:disabled{opacity:.35;cursor:default}
+.tb .swatch{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.tb.mag{font:600 11px var(--f-mono);height:24px;color:var(--muted)}
+.rsep{width:24px;height:1px;background:var(--rule);margin:5px 0;flex:none}
+.rlabel{font:600 9px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:center;padding:2px 0 1px}
+#board{flex:1;min-width:0;position:relative;overflow:hidden;border:1px solid var(--rule);border-radius:10px;touch-action:none;
+  background-color:var(--mat);background-image:radial-gradient(circle,var(--dot) 1px,transparent 1.3px);background-size:22px 22px}
+
+/* Status bar */
+.statusbar{display:flex;align-items:center;gap:14px;height:30px;padding:0 16px;background:var(--chrome);border-top:1px solid var(--rule);font-size:12px;color:var(--muted);flex:none;white-space:nowrap;overflow:hidden}
+.statusbar b{color:var(--ink);font-weight:600}
+.sb-tool{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.sb-item{font-family:var(--f-mono);font-size:11.5px;font-variant-numeric:tabular-nums}
+.sb-item+.sb-item{padding-left:14px;border-left:1px solid var(--rule)}
+.sb-save::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px;vertical-align:1px}
+.sb-save.off::before{background:var(--faint)}
+@media (max-width:760px){.statusbar .sb-item:not(.sb-save){display:none}}
+
+/* Sheet card */
+.sheet{position:absolute;display:flex;flex-direction:column;background:var(--chrome);border:1px solid var(--rule-2);border-radius:7px;box-shadow:var(--shadow-sm);overflow:hidden;container-type:inline-size}
+.sheet.sel{border-color:var(--redline);box-shadow:0 0 0 1px var(--redline),var(--shadow)}
+.sbar{display:flex;align-items:center;gap:1px;height:34px;flex:none;padding:0 4px 0 10px;border-bottom:1px solid var(--rule);cursor:grab;user-select:none;-webkit-user-select:none;background:var(--chrome)}
+.sheet.moving .sbar{cursor:grabbing}
+.sname{flex:1;min-width:0;font:600 12px var(--f-mono);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:6px}
+.tag{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--chrome-3);border-radius:3px;padding:1px 5px;margin-right:6px}
+.pager{display:flex;align-items:center}
+.pg{font:11.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;padding:0 2px}
+.sbar .ib{width:26px;height:26px}
+.zr{font:11.5px var(--f-mono);border:0;background:transparent;color:var(--muted);padding:4px 6px;min-width:46px;border-radius:5px;cursor:pointer;font-variant-numeric:tabular-nums}
+.zr:hover{background:var(--chrome-2);color:var(--ink)}
+.st{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;background:var(--chrome-2);padding:2px 9px 2px 7px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex:none;margin-right:4px;line-height:1.5}
+.st:hover{background:var(--chrome-3)}
+.st i,.dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+[data-st="approved"]{color:var(--ok)} [data-st="comments"]{color:var(--warn)} [data-st="revise"]{color:var(--bad)} [data-st="none"]{color:var(--muted)}
+@container (max-width:420px){.sbar .st span{display:none}.sbar .st{padding:5px}}
+@container (max-width:310px){.pg,.tag{display:none}}
+@container (max-width:240px){.zr,.sbar [data-a="max"]{display:none}}
+.view{position:relative;flex:1;min-height:0;overflow:hidden;background:var(--sheet-mat);cursor:default;touch-action:none}
+.xhair{position:absolute;inset:0;pointer-events:none;z-index:1}
+.xhair i{position:absolute;display:block}
+.xhair .xh-h{left:0;right:0;height:0;border-top:1px dashed var(--redline)}
+.xhair .xh-v{top:0;bottom:0;width:0;border-left:1px dashed var(--redline)}
+#board[data-hover="cross"][data-tool="select"] .view{cursor:crosshair}
+.view.grabbing{cursor:grabbing}
+#board[data-tool="pen"] .view,#board[data-tool="cloud"] .view,#board[data-tool="rect"] .view,#board[data-tool="arrow"] .view,#board[data-tool="measure"] .view,#board[data-tool="pin"] .view,#board[data-tool="stamp"] .view{cursor:crosshair}
+#board[data-tool="text"] .view{cursor:text}
+#board[data-tool="eraser"] .view{cursor:default}
+body.spacepan .view{cursor:grab!important}
+.view.lens{cursor:none!important}
+.view canvas{position:absolute;left:0;top:0;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.08)}
+.ov{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+#board[data-tool="select"] .ov .mk-pin,#board[data-tool="eraser"] .ov .mk-pin{pointer-events:auto;cursor:pointer}
+#board[data-tool="eraser"] .ov .hit{pointer-events:stroke}
+#board[data-tool="eraser"] .ov text,#board[data-tool="eraser"] .ov .mk-stamp rect{pointer-events:auto}
+#board[data-tool="eraser"] .ov .mk:hover{opacity:.4}
+.ov .flash{animation:flash .5s 4 alternate}
+@keyframes flash{to{opacity:.15}}
+.spin{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font:12px var(--f-mono)}
+.grip{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;touch-action:none;z-index:2;
+  background:linear-gradient(135deg,transparent 0 55%,var(--faint) 55% 61%,transparent 61% 72%,var(--faint) 72% 78%,transparent 78%);opacity:.7}
+.grip:hover{opacity:1}
+
+/* Empty + drop */
+.empty{position:absolute;inset:0;display:grid;place-items:center;padding:16px}
+.empty-card{max-width:460px;text-align:center;padding:34px 30px;border:1px solid var(--rule);border-radius:12px;background:var(--chrome);display:grid;gap:12px;justify-items:center;box-shadow:var(--shadow)}
+.empty-card h2{margin:4px 0 0;font-size:20px;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.empty-card p{margin:0;color:var(--muted);font-size:13px;max-width:44ch}
+.empty-card .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.empty-card .fine{font-size:12px;color:var(--faint)}
+.linkbtn{border:0;background:none;color:var(--redline);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-size:13px;padding:2px}
+.drop{position:absolute;inset:10px;border:2px dashed var(--redline);border-radius:10px;background:var(--redline-soft);display:grid;place-items:center;font-size:20px;font-weight:600;z-index:99995;pointer-events:none}
+
+/* Review panel */
+.panel{width:340px;flex:none;display:flex;flex-direction:column;min-height:0;background:var(--chrome);border:1px solid var(--rule);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.ptabs{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--rule);padding:0 6px 0 8px;flex:none;height:42px}
+.ptab{border:0;background:none;height:42px;padding:0 10px;font-weight:600;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:-1px}
+.ptab:hover{color:var(--ink)}
+.ptab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--redline)}
+.ptabs .ib{margin-left:auto}
+.psec{flex:1;min-height:0;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.prow{display:flex;gap:6px;align-items:center}
+.field{width:100%;height:32px;padding:0 10px;border:1px solid var(--rule-2);border-radius:6px;background:var(--field)}
+.stsum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stsum span{display:grid;gap:1px;padding:7px 8px;border:1px solid var(--rule);border-radius:7px;font-size:11px;line-height:1.25}
+.stsum b{font:600 17px/1.1 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.stsum em{font-style:normal;display:flex;align-items:center;gap:5px}
+.sitem{padding:9px 10px;border:1px solid var(--rule);border-radius:7px;background:var(--field);cursor:pointer;display:grid;gap:3px;text-align:left}
+.sitem.on{border-color:var(--redline);box-shadow:0 0 0 1px var(--redline)}
+.sitem:hover{border-color:var(--rule-2)}
+.sl1{display:flex;align-items:center;gap:8px}
+.sn{flex:1;min-width:0;font:600 12px var(--f-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sl2{font-size:12px;color:var(--muted)}
+.note{border:1px solid var(--rule);border-radius:7px;background:var(--field);padding:9px;display:grid;gap:7px}
+.note.done{background:var(--chrome-2)}
+.note.done textarea{color:var(--muted)}
+.nhead{display:flex;align-items:center;gap:8px}
+.pinno{min-width:22px;height:22px;border-radius:11px;display:grid;place-items:center;color:#fff;font:700 11px var(--f-mono);padding:0 5px;flex:none}
+.nlink{flex:1;min-width:0;text-align:left;border:0;background:none;font:600 12px var(--f-mono);cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0}
+.nlink:hover{text-decoration:underline}
+.nres{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
+.note textarea{width:100%;resize:vertical;min-height:54px;font:13px/1.45 var(--f-body);border:1px solid var(--rule);border-radius:5px;padding:7px 8px;background:var(--chrome)}
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:6px;overflow:hidden;flex:none;background:var(--chrome)}
+.seg button{border:0;background:transparent;height:30px;padding:0 11px;font-size:12px;cursor:pointer;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--chrome-3);color:var(--ink);font-weight:600}
+.pfoot{border-top:1px solid var(--rule);padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px;flex:none;background:var(--chrome)}
+.pempty{color:var(--muted);font-size:13px;padding:6px 2px}
+
+/* Popover */
+.pop{position:fixed;left:0;top:0;z-index:100003;background:var(--chrome);border:1px solid var(--rule);border-radius:9px;box-shadow:var(--shadow-lg);padding:5px;min-width:220px;max-width:min(340px,calc(100vw - 16px))}
+.mi{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--ink)}
+.mi:hover,.mi:focus-visible{background:var(--chrome-2)}
+.mi.danger{color:var(--bad)}
+.mi .ck{margin-left:auto;color:var(--redline);font-weight:700}
+.mi small{display:block;color:var(--muted);font-size:11.5px;line-height:1.3}
+.mhead{font-size:10.5px;font-weight:600;color:var(--faint);padding:7px 10px 3px;letter-spacing:.07em;text-transform:uppercase}
+.mnote{font-size:12px;color:var(--muted);padding:2px 10px 6px}
+.msep{height:1px;background:var(--rule);margin:4px 0}
+.ask{display:grid;gap:6px;padding:6px}
+.ask label{font-size:12px;color:var(--muted)}
+.ask .row{display:flex;gap:6px}
+.ask input{flex:1;min-width:0}
+
+/* Compare */
+.cmp{position:absolute;inset:10px 16px;z-index:5;display:flex;flex-direction:column;background:var(--chrome);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow-lg);overflow:hidden}
+.cmp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 12px;border-bottom:1px solid var(--rule)}
+.cmp-bar b{font-size:15px;font-weight:600}
+.cmp-bar label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.cmp-bar select{max-width:230px}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px}
+.nudge{display:flex;align-items:center;gap:2px;font:12px var(--f-mono);color:var(--muted)}
+.nudge output{min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+.cmp-stage{position:relative;flex:1;min-height:0;overflow:hidden;background:var(--sheet-mat);cursor:grab;touch-action:none}
+.cmp-stage.grabbing{cursor:grabbing}
+.cmp-stage canvas{position:absolute;left:0;top:0;background:#fff}
+
+/* Dialog */
+.dlg-back{position:fixed;inset:0;background:var(--scrim);z-index:100004;display:grid;place-items:center;padding:16px}
+.dlg{background:var(--chrome);border:1px solid var(--rule);border-radius:12px;max-width:640px;width:100%;max-height:calc(100% - 32px);overflow:auto;padding:22px 24px;box-shadow:var(--shadow-lg);display:grid;gap:12px}
+.dlg h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.dlg h3{margin:8px 0 0;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.dlg p{margin:0;color:var(--muted)}
+.dlg table{border-collapse:collapse;width:100%;font-size:13px}
+.dlg td{padding:6px 10px 6px 0;vertical-align:top;border-bottom:1px solid var(--rule)}
+.dlg td:first-child{white-space:nowrap;width:1%}
+kbd{font:600 11px var(--f-mono);border:1px solid var(--rule-2);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--field)}
+.dlg textarea{width:100%;min-height:240px;font:12px/1.5 var(--f-mono);padding:8px;border:1px solid var(--rule-2);border-radius:6px;background:var(--field)}
+.dlg .row{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.dlg .frm{display:grid;gap:6px}
+.dlg .frm label{font-size:12px;font-weight:600}
+.choice{display:grid;gap:6px}
+.choice label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;cursor:pointer}
+.choice label:has(input:checked){border-color:var(--redline);background:var(--redline-soft)}
+.choice input{margin-top:3px;accent-color:var(--redline)}
+.choice b{display:block;font-weight:600}
+.choice span{color:var(--muted);font-size:12px}
+
+/* Loupe */
+.loupe{position:fixed;left:0;top:0;border-radius:50%;overflow:hidden;pointer-events:none;z-index:100001;background:#fff;box-shadow:0 0 0 2px var(--redline),0 12px 32px rgba(0,0,0,.35)}
+.loupe canvas{display:block;width:100%;height:100%}
+.loupe::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border:1px solid rgba(200,54,30,.7);border-radius:50%}
+.loupe-tag{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font:600 10px var(--f-mono);background:rgba(20,24,28,.75);color:#fff;padding:1px 6px;border-radius:8px;white-space:nowrap}
+
+.toast{position:fixed;left:50%;bottom:calc(44px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--toast-bg);color:var(--toast-fg);padding:9px 15px;border-radius:8px;font-size:13px;z-index:100005;max-width:calc(100% - 32px);box-shadow:var(--shadow-lg);transition:opacity .2s;pointer-events:none}
+.toast.out{opacity:0}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.ov .flash{animation:none}}
+
+@media (max-width:820px){
+  main{flex-direction:column}
+  .rail{flex-direction:row;overflow-x:auto;overflow-y:hidden}
+  .rsep{width:1px;height:24px;margin:0 5px}
+  .rlabel{display:none}
+  .panel{position:absolute;inset:10px 16px;z-index:6;width:auto;box-shadow:var(--shadow-lg)}
+}
+</style>
+
+<header class="top">
+  <div class="brand">
+    <span class="mark"><svg width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><rect x="1.5" y="3.5" width="19" height="15" fill="none" stroke="#f4f5f6" stroke-width="1.5"/><path d="M14 3.5v15M14 13.5h6.5" stroke="#f4f5f6" stroke-width="1.2"/><path d="M4 15l4-6 3 4" fill="none" stroke="#ff6b52" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <b>Plan Table</b>
+    <span class="sub">Drawing Review</span>
+  </div>
+  <span class="tsep"></span>
+  <button class="btn primary" id="addBtn" type="button">
+    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>Add PDFs</button>
+  <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
+  <div class="group">
+    <button class="btn ghost" id="tileBtn" type="button" title="Arrange all sheets to fit the screen (G)"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.5h5v5H2zM9 2.5h5v5H9zM2 9.5h5v4H2zM9 9.5h5v4H9z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl-sm">Tile</span></button>
+    <button class="btn ghost" id="linkBtn" type="button" aria-pressed="false" title="Zoom and pan every sheet together (K)"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 9.5l3-3M7 4.8l1-1a2.9 2.9 0 0 1 4.2 4.2l-1 1M9 11.2l-1 1a2.9 2.9 0 0 1-4.2-4.2l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span class="lbl-sm">Link zoom</span></button>
+    <button class="btn ghost" id="cmpBtn" type="button" title="Overlay two sheets to see what changed"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h7v9H2zM7 5.5h7V14H7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl-sm">Compare</span></button>
+  </div>
+  <span class="spacer"></span>
+  <span class="notice" id="notice" hidden>Sample sheets · your PDFs replace them</span>
+  <div class="group">
+    <button class="btn ghost" id="panelBtn" type="button" aria-pressed="false" title="Sheets and comments (B)"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v10H2zM10 3v10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl-sm">Review</span> <span class="badge" id="topBadge"></span></button>
+    <button class="btn" id="exportBtn" type="button" title="Save marked-up PDFs, reports and comment lists"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8M4.5 6.5L8 10l3.5-3.5M2.5 11v2.5h11V11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl-sm">Export</span><svg class="caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+    <button class="ib lg" id="settingsBtn" type="button" title="Reviewer settings" aria-label="Reviewer settings"><svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5v1.7M8 12.8v1.7M14.5 8h-1.7M3.2 8H1.5M12.6 3.4l-1.2 1.2M4.6 11.4l-1.2 1.2M12.6 12.6l-1.2-1.2M4.6 4.6L3.4 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+    <button class="ib lg" id="helpBtn" type="button" title="Shortcuts and help (?)" aria-label="Help"><svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.3 6.2a1.8 1.8 0 0 1 3.5.5c0 1.2-1.8 1.5-1.8 2.6M8 11.4h.01" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+  </div>
+</header>
+
+<main id="main">
+  <nav class="rail" id="rail" aria-label="Markup tools"></nav>
+  <div id="board" data-tool="select">
+    <div class="empty" id="empty" hidden>
+      <div class="empty-card">
+        <svg width="46" height="46" viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="8" width="26" height="32" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/><rect x="14" y="4" width="26" height="32" rx="2" fill="var(--chrome)" stroke="currentColor" stroke-width="1.5"/><path d="M27 14v12M21 20h12" stroke="var(--redline)" stroke-width="2" stroke-linecap="round"/></svg>
+        <h2>Drop drawing PDFs here</h2>
+        <p>Lay out a whole drawing set on one screen. Mark up, pin comments, stamp a review status, compare revisions, and save the markups back into the PDFs.</p>
+        <div class="row"><button class="btn primary" id="emptyAdd" type="button">Choose PDFs</button><button class="btn" id="sampleBtn" type="button">Load sample sheets</button></div>
+        <p class="fine">Files stay on this device. Nothing is uploaded.</p>
+        <p id="engineErr" hidden>The PDF engine didn’t load. Check your internet connection and reload the page.</p>
+      </div>
+    </div>
+    <div class="drop" id="drop" hidden>Drop to add PDFs</div>
+  </div>
+  <aside class="panel" id="panel" hidden aria-label="Review panel">
+    <div class="ptabs" role="tablist">
+      <button class="ptab" type="button" role="tab" data-tab="sheets" aria-selected="true">Sheets</button>
+      <button class="ptab" type="button" role="tab" data-tab="notes" aria-selected="false">Comments <span class="badge" id="noteBadge"></span></button>
+      <button class="ib" type="button" id="panelClose" title="Close panel" aria-label="Close panel"></button>
+    </div>
+    <section class="psec" id="tabSheets">
+      <div class="stsum" id="stSum"></div>
+      <div class="prow"><input class="field" id="sheetSearch" type="search" placeholder="Filter sheets" aria-label="Filter sheets"><button class="btn" id="clearBtn" type="button" title="Remove every sheet from the board">Clear all</button></div>
+      <button class="btn" type="button" id="splitAllBtn" hidden>Split multi-page files into one card per page</button>
+      <div id="sheetList" style="display:grid;gap:6px"></div>
+    </section>
+    <section class="psec" id="tabNotes" hidden>
+      <div class="seg" id="noteFilter" role="group" aria-label="Show comments">
+        <button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="open" aria-pressed="false">Open</button><button type="button" data-f="done" aria-pressed="false">Resolved</button>
+      </div>
+      <div id="noteList" style="display:grid;gap:8px"></div>
+    </section>
+    <footer class="pfoot">
+      <button class="btn primary" id="expMarked" type="button">Save marked-up PDF</button>
+      <button class="btn" id="expMore" type="button">More exports</button>
+    </footer>
+  </aside>
+  <section class="cmp" id="cmp" hidden aria-label="Compare sheets">
+    <div class="cmp-bar">
+      <b>Compare</b>
+      <label for="cmpA">Old <select class="sel" id="cmpA"></select></label>
+      <button class="ib" type="button" id="cmpSwap" title="Swap old and new" aria-label="Swap old and new"></button>
+      <label for="cmpB">New <select class="sel" id="cmpB"></select></label>
+      <div class="seg" id="cmpMode" role="group" aria-label="View">
+        <button type="button" data-m="overlay" aria-pressed="true">Overlay</button><button type="button" data-m="a" aria-pressed="false">Old</button><button type="button" data-m="b" aria-pressed="false">New</button>
+      </div>
+      <div class="legend"><span><i style="background:rgb(235,40,25)"></i>Only in old</span><span><i style="background:rgb(0,150,215)"></i>Only in new</span><span><i style="background:#222"></i>Unchanged</span></div>
+      <div class="nudge" title="Shift the new sheet to line it up (arrow keys)">
+        <button class="ib" type="button" data-n="-1,0" aria-label="Nudge left">←</button><button class="ib" type="button" data-n="0,-1" aria-label="Nudge up">↑</button><button class="ib" type="button" data-n="0,1" aria-label="Nudge down">↓</button><button class="ib" type="button" data-n="1,0" aria-label="Nudge right">→</button>
+        <output id="nudgeOut">0, 0</output><button class="btn" type="button" id="nudgeReset">Reset</button>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn" type="button" id="cmpClose">Close</button>
+    </div>
+    <div class="cmp-stage" id="cmpStage"></div>
+  </section>
+</main>
+
+<footer class="statusbar">
+  <span class="sb-tool" id="toolhint"></span>
+  <span class="spacer"></span>
+  <span class="sb-item" id="sbSel"></span>
+  <span class="sb-item" id="count">No files</span>
+  <span class="sb-item sb-save off" id="sbSave">Not saved yet</span>
+</footer>
+
+<div class="pop" id="pop" hidden></div>
+<div class="dlg-back" id="dlg" hidden><div class="dlg" role="dialog" aria-modal="true" id="dlgBody"></div></div>
+<div class="loupe" id="loupe" hidden><canvas></canvas><span class="loupe-tag"></span></div>
+<div class="toast out" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script>
+(() => {
+const $ = (q, el = document) => el.querySelector(q);
+const $$ = (q, el = document) => [...el.querySelectorAll(q)];
+const board = $('#board'), emptyEl = $('#empty'), dropEl = $('#drop'), pop = $('#pop'), panel = $('#panel');
+const loupe = $('#loupe'), lc = $('canvas', loupe), lctx = lc.getContext('2d'), ltag = $('.loupe-tag', loupe);
+const GAP = 12, BAR = 34;
+const COLORS = ['#e0301e', '#1f6fd1', '#1e9e57', '#e08a00'];
+const COLOR_NAMES = ['Red', 'Blue', 'Green', 'Amber'];
+const STATUS = {
+  none: { label: 'Not reviewed', short: 'Not reviewed', rgb: [110, 118, 126] },
+  approved: { label: 'Approved', short: 'Approved', rgb: [31, 138, 76] },
+  comments: { label: 'Approved with comments', short: 'Comments', rgb: [168, 106, 18] },
+  revise: { label: 'Revise and resubmit', short: 'Revise', rgb: [194, 54, 31] }
+};
+// Review stamps: the three outcomes a reviewer signs off with. Placing one also sets the sheet's status.
+const STAMP = {
+  approved: { title: 'APPROVED', hex: '#1d8048' },
+  comments: { title: 'APPROVED WITH COMMENTS', hex: '#a2640f' },
+  revise: { title: 'REVISE AND RESUBMIT', hex: '#c8361e' }
+};
+const store = { get(k) { try { return localStorage.getItem('plan-table:' + k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem('plan-table:' + k, v); } catch (e) {} } };
+const S = { sheets: [], z: 10, auto: true, hoverMode: ['arrow', 'loupe', 'cross'].includes(store.get('hover')) ? store.get('hover') : 'arrow', mag: +store.get('mag') || 3, sel: null, hi: null, hiJob: null, hover: null,
+  tool: 'select', color: COLORS[0], link: false, space: false, undo: [], redo: [], pinSeq: 0, calibrate: null,
+  noteFilter: 'all', restoring: false, stampStatus: 'approved', reviewer: store.get('reviewer') || '', org: store.get('org') || '' };
+const inArtifact = !!(window.claude && typeof window.claude.use === 'function');
+let seq = 0;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const dpr = () => window.devicePixelRatio || 1;
+const r2 = n => Math.round(n * 100) / 100;
+const escX = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const boardSize = () => ({ w: board.clientWidth, h: board.clientHeight });
+const fmtDate = d => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+
+/* ---------- toast ---------- */
+const toastEl = $('#toast'); let toastT;
+function toast(msg, ms = 2600) {
+  toastEl.textContent = msg; toastEl.classList.remove('out');
+  clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.add('out'), ms);
+}
+
+/* ---------- icons ---------- */
+const P = {
+  prev: 'M10 3 5 8l5 5', next: 'M6 3l5 5-5 5', max: 'M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3',
+  restore: 'M6 3v3H3M13 6h-3V3M10 13v-3h3M3 10h3v3', close: 'M4 4l8 8M12 4l-8 8', more: 'M3.5 8h.01M8 8h.01M12.5 8h.01',
+  select: 'M4 2.5l8.5 6-3.8.9 2.3 4.4-1.8.9-2.3-4.4L4 13z', pen: 'M3 13l.8-3.2L10.6 3 13 5.4 6.2 12.2zM9.2 4.4l2.4 2.4',
+  cloud: 'M4.5 12a2.3 2.3 0 0 1-.3-4.6A3 3 0 0 1 9.5 5a2.6 2.6 0 0 1 3.6 2.4 2.3 2.3 0 0 1-.6 4.6z', rect: 'M2.5 4h11v8h-11z',
+  arrow: 'M3 13L13 3M7 3h6v6', text: 'M3 4.5V3h10v1.5M8 3v10M6 13h4', pin: 'M8 14.5s-4.5-4.3-4.5-7.8a4.5 4.5 0 0 1 9 0c0 3.5-4.5 7.8-4.5 7.8zM8 6.7h.01',
+  measure: 'M1.8 10.2l8.4-8.4 4 4-8.4 8.4zM4.4 7.6l1.6 1.6M6.6 5.4l1.6 1.6M8.8 3.2l1.6 1.6', eraser: 'M6 13.5L2.5 10l7-7L13 6.5l-7 7zM6 13.5h7.5M5 7.5l3.5 3.5',
+  undo: 'M6 3L3 6l3 3M3 6h6.5a3.5 3.5 0 0 1 0 7H7', redo: 'M10 3l3 3-3 3M13 6H6.5a3.5 3.5 0 0 0 0 7H9', swap: 'M3 5h10l-3-3M13 11H3l3 3',
+  stamp: 'M2.5 13.5h11M3.5 11h9l-.8-2.5H4.3zM6.4 8.5V6.2a1.6 1.6 0 1 1 3.2 0v2.3'
+};
+const svg = (d, w = 1.6) => `<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+$('#panelClose').innerHTML = svg(P.close);
+$('#cmpSwap').innerHTML = svg(P.swap);
+
+/* ---------- local save (IndexedDB, this browser only) ---------- */
+const idb = {
+  p: null,
+  conn() {
+    if (!this.p) this.p = new Promise((res, rej) => {
+      try { const r = indexedDB.open('plan-table', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }
+      catch (e) { rej(e); }
+    });
+    return this.p;
+  },
+  async run(mode, fn) {
+    try {
+      const db = await this.conn();
+      return await new Promise((res, rej) => { const st = db.transaction('kv', mode).objectStore('kv'); const q = fn(st); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+    } catch (e) { return null; }
+  },
+  get(k) { return this.run('readonly', st => st.get(k)); },
+  set(k, v) { return this.run('readwrite', st => st.put(v, k)); },
+  del(k) { return this.run('readwrite', st => st.delete(k)); },
+  clear() { return this.run('readwrite', st => st.clear()); }
+};
+let saveT;
+function dirty() { if (S.restoring) return; clearTimeout(saveT); saveT = setTimeout(saveSession, 1000); }
+function setSaveState(text, on) { const el = $('#sbSave'); el.textContent = text; el.classList.toggle('off', !on); }
+async function saveSession() {
+  const real = S.sheets.filter(s => !s.isSample);
+  if (!real.length) { await idb.set('session', null); setSaveState(S.sheets.length ? 'Samples aren’t saved' : 'Nothing to save', false); return; }
+  setSaveState('Saved on this device · ' + new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }), true);
+  await idb.set('session', { v: 1, savedAt: Date.now(), pinSeq: S.pinSeq, auto: S.auto,
+    sheets: real.map(s => ({ fkey: s.fkey, name: s.name, base: s.base, lock: s.lock, page: s.page, rot: s.rot, status: s.status, scale: s.scale, mmPerPt: s.mmPerPt, marks: s.marks, x: s.x, y: s.y, w: s.w, h: s.h })) });
+}
+async function restoreSession() {
+  const meta = await idb.get('session');
+  if (!meta || !meta.sheets || !meta.sheets.length) return false;
+  S.restoring = true;
+  let n = 0;
+  const docs = {};
+  for (const o of meta.sheets) {
+    try {
+      if (!docs[o.fkey]) {
+        const bytes = await idb.get('f:' + o.fkey);
+        if (!bytes) continue;
+        docs[o.fkey] = await pdfjsLib.getDocument({ data: bytes, isEvalSupported: false }).promise;
+      }
+      await addPdf(o.name, null, false, Object.assign({}, o, { pdf: docs[o.fkey] })); n++;
+    } catch (e) { console.error(e); }
+  }
+  S.restoring = false;
+  if (!n) return false;
+  S.pinSeq = Math.max(meta.pinSeq || 0, ...allPins().map(x => x.m.n), 0);
+  S.auto = meta.auto !== false;
+  if (S.auto) tile(true); else S.sheets.forEach(s => { clampPos(s); applyRect(s); });
+  refresh();
+  toast(`Restored your last review (${n} ${n === 1 ? 'sheet' : 'sheets'}, saved ${fmtDate(new Date(meta.savedAt))})`, 4000);
+  return true;
+}
+
+/* ---------- sheet lifecycle ---------- */
+const ro = new ResizeObserver(entries => {
+  for (const en of entries) { const s = en.target._sheet; if (s) { place(s); scheduleRender(s, 120); } }
+});
+
+// A card shows one PDF. A split card (lock) is pinned to one page and shares the PDF document with its sibling cards.
+const multi = s => !s.lock && s.pages > 1;
+const pageLabel = (s, p) => s.name + (multi(s) ? ` · p${p}` : '');
+const cardPages = s => s.lock ? [s.page] : Array.from({ length: s.pages }, (_, i) => i + 1);
+function countPages() {
+  const docs = new Map();
+  S.sheets.forEach(s => docs.set(s.pdf, s.pages));
+  return { files: docs.size, pages: [...docs.values()].reduce((a, b) => a + b, 0) };
+}
+async function addPdf(name, bytes, isSample, o = {}) {
+  const pdf = o.pdf || await pdfjsLib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
+  const s = { id: ++seq, fkey: o.fkey || null, name, base: o.base || name, lock: !!o.lock, pdf, isSample, page: clamp(o.page || 1, 1, pdf.numPages), pages: pdf.numPages,
+    rot: o.rot || 0, status: o.status || 'none', scale: o.scale === undefined ? 100 : o.scale, mmPerPt: o.mmPerPt || null,
+    marks: o.marks || {}, pageObj: null, pw: 1, ph: 1, x: o.x ?? GAP, y: o.y ?? GAP, w: o.w || 320, h: o.h || 260,
+    zoom: 1, ox: 0, oy: 0, dw: 0, dh: 0, canvas: null, canvasKey: '', renderTask: null, timer: 0, prev: null,
+    ptrs: new Map(), drag: null, pinch: null, draft: null, ovF: 0 };
+  if (!isSample && !s.fkey) { s.fkey = uid(); await idb.set('f:' + s.fkey, bytes); }
+  await loadPage(s);
+  buildCard(s);
+  S.sheets.push(s);
+  applyRect(s);
+  return s;
+}
+
+async function loadPage(s) {
+  const n = s.page;
+  const pg = await s.pdf.getPage(n);
+  if (s.page !== n) return false;
+  s.pageObj = pg;
+  s.vp0 = pg.getViewport({ scale: 1 });
+  s.vpR = pg.getViewport({ scale: 1, rotation: (pg.rotate + s.rot) % 360 });
+  s.pw = s.vpR.width; s.ph = s.vpR.height;
+  return true;
+}
+
+function buildCard(s) {
+  const el = document.createElement('div');
+  el.className = 'sheet'; el.tabIndex = 0;
+  el.innerHTML = `<div class="sbar"><span class="sname"></span>${s.isSample ? '<span class="tag">Sample</span>' : ''}
+    <button class="st" type="button" data-a="status" title="Review status"><i></i><span></span></button>
+    <span class="pager"${multi(s) ? '' : ' hidden'}><button class="ib" type="button" data-a="prev" title="Previous page ([)">${svg(P.prev)}</button><span class="pg"></span><button class="ib" type="button" data-a="next" title="Next page (])">${svg(P.next)}</button></span>
+    <button class="zr" type="button" data-a="fit" title="Zoom to fit (0)">Fit</button>
+    <button class="ib" type="button" data-a="more" title="Sheet options">${svg(P.more, 2.6)}</button>
+    <button class="ib" type="button" data-a="max" title="Maximize">${svg(P.max)}</button>
+    <button class="ib" type="button" data-a="close" title="Remove from board">${svg(P.close)}</button></div>
+    <div class="view"><div class="spin">Rendering…</div><svg class="ov" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg></div><div class="grip" title="Drag to resize"></div>`;
+  const nm = $('.sname', el); nm.textContent = s.name; nm.title = s.name;
+  s.el = el; s.view = $('.view', el); s.view._sheet = s; s.ov = $('.ov', el); s.zr = $('.zr', el); s.maxBtn = $('[data-a="max"]', el);
+  s.stBtn = $('[data-a="status"]', el); s.pgEl = $('.pg', el); s.prevBtn = $('[data-a="prev"]', el); s.nextBtn = $('[data-a="next"]', el);
+  updatePager(s); updateStatusChip(s);
+
+  el.addEventListener('pointerdown', () => select(s), true);
+  el.addEventListener('focus', () => select(s));
+  const bar = $('.sbar', el);
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const a = b.dataset.a;
+    if (a === 'prev') goPage(s, -1);
+    else if (a === 'next') goPage(s, 1);
+    else if (a === 'fit') fit(s);
+    else if (a === 'max') toggleMax(s);
+    else if (a === 'close') confirmRemove(s, b);
+    else if (a === 'status') statusMenu(s, b);
+    else if (a === 'more') moreMenu(s, b);
+  });
+  bar.addEventListener('pointerdown', e => { if (!e.target.closest('button') && e.button === 0) startMove(s, e); });
+  bar.addEventListener('dblclick', e => { if (!e.target.closest('button')) toggleMax(s); });
+  $('.grip', el).addEventListener('pointerdown', e => { e.stopPropagation(); startResize(s, e); });
+  bindView(s);
+  board.insertBefore(el, dropEl);
+  ro.observe(s.view);
+}
+
+function confirmRemove(s, anchor) {
+  const n = Object.values(s.marks).reduce((a, l) => a + l.length, 0);
+  if (!n) { removeSheet(s); return; }
+  openMenu(anchor, [{ head: `${n} ${n === 1 ? 'markup' : 'markups'} on this sheet` },
+    { label: 'Remove sheet and its markups', danger: true, act: () => removeSheet(s) }]);
+}
+function removeSheet(s, keepLayout) {
+  if (s.renderTask) s.renderTask.cancel();
+  clearTimeout(s.timer); ro.unobserve(s.view); s.el.remove();
+  S.sheets = S.sheets.filter(x => x !== s);
+  if (!S.sheets.some(x => x.pdf === s.pdf)) {
+    s.pdf.destroy();
+    if (s.fkey) idb.del('f:' + s.fkey);
+  }
+  if (keepLayout) return;
+  if (S.hi && S.hi.id === s.id) S.hi = null;
+  if (S.sel === s) S.sel = null;
+  if (S.hover && S.hover.s === s) S.hover = null;
+  if (S.calibrate === s.id) S.calibrate = null;
+  hideLoupe(); refresh(); dirty();
+  if (S.auto) tile(false);
+}
+
+function select(s) {
+  if (S.sel !== s) {
+    if (S.sel) S.sel.el.classList.remove('sel');
+    S.sel = s; s.el.classList.add('sel');
+    $$('.sitem').forEach(it => it.classList.toggle('on', +it.dataset.sid === s.id));
+    updateSB();
+  }
+  if (s.el.style.zIndex != S.z) s.el.style.zIndex = ++S.z;
+}
+function updateSB() {
+  const s = S.sel && S.sheets.includes(S.sel) ? S.sel : null;
+  $('#sbSel').textContent = s ? `${s.lock || s.pages < 2 ? s.name : `${s.name} · p${s.page}/${s.pages}`} · ${s.zoom <= 1.001 ? 'fit' : Math.round(s.zoom * 100) + '%'}` : 'No sheet selected';
+}
+function applyRect(s) {
+  const st = s.el.style;
+  st.left = s.x + 'px'; st.top = s.y + 'px'; st.width = s.w + 'px'; st.height = s.h + 'px';
+}
+function clampPos(s) {
+  const B = boardSize();
+  s.x = clamp(s.x, 70 - s.w, Math.max(0, B.w - 70));
+  s.y = clamp(s.y, 0, Math.max(0, B.h - BAR));
+}
+
+/* ---------- view: fit, zoom, pan, link ---------- */
+function place(s) {
+  const vw = s.view.clientWidth, vh = s.view.clientHeight;
+  if (!vw || !vh) return;
+  const f = Math.min(vw / s.pw, vh / s.ph) * s.zoom;
+  const w = s.pw * f, h = s.ph * f;
+  s.ox = w <= vw ? (vw - w) / 2 : clamp(s.ox, vw - w, 0);
+  s.oy = h <= vh ? (vh - h) / 2 : clamp(s.oy, vh - h, 0);
+  s.dw = w; s.dh = h;
+  const tf = `translate(${s.ox}px,${s.oy}px)`;
+  if (s.canvas) { const st = s.canvas.style; st.width = w + 'px'; st.height = h + 'px'; st.transform = tf; }
+  const os = s.ov.style; os.width = w + 'px'; os.height = h + 'px'; os.transform = tf;
+  if (!s.ovF || Math.abs(f - s.ovF) / f > 0.02) renderMarks(s);
+}
+function zoomTo(s, z, cx, cy) {
+  const z2 = clamp(z, 1, 24), z1 = s.zoom;
+  if (Math.abs(z2 - z1) < 1e-4) return;
+  const k = z2 / z1;
+  s.ox = cx - (cx - s.ox) * k; s.oy = cy - (cy - s.oy) * k;
+  s.zoom = z2; place(s); updateZoom(s); scheduleRender(s); syncFrom(s);
+}
+function zoomCenter(s, f) { zoomTo(s, s.zoom * f, s.view.clientWidth / 2, s.view.clientHeight / 2); }
+function fit(s) { s.zoom = 1; place(s); updateZoom(s); scheduleRender(s); syncFrom(s); }
+function updateZoom(s) { s.zr.textContent = s.zoom <= 1.001 ? 'Fit' : Math.round(s.zoom * 100) + '%'; if (s === S.sel) updateSB(); }
+function updatePager(s) {
+  s.pgEl.textContent = `${s.page} / ${s.pages}`;
+  s.prevBtn.disabled = s.page <= 1; s.nextBtn.disabled = s.page >= s.pages;
+}
+async function goPage(s, d, abs) {
+  const n = clamp(abs || s.page + d, 1, s.pages);
+  if (n === s.page || s.lock) return;
+  s.page = n; s.zoom = 1; updatePager(s); updateZoom(s); hideLoupe();
+  if (!(await loadPage(s))) return;
+  s.ovF = 0; place(s); render(s); refreshSheetList(); dirty();
+}
+function syncFrom(s) {
+  if (!S.link || !s.dw) return;
+  const vw = s.view.clientWidth, vh = s.view.clientHeight;
+  const cx = (vw / 2 - s.ox) / s.dw, cy = (vh / 2 - s.oy) / s.dh;
+  for (const t of S.sheets) {
+    if (t === s) continue;
+    const tw = t.view.clientWidth, th = t.view.clientHeight;
+    if (!tw || !th) continue;
+    const f = Math.min(tw / t.pw, th / t.ph) * s.zoom;
+    t.zoom = s.zoom; t.ox = tw / 2 - cx * t.pw * f; t.oy = th / 2 - cy * t.ph * f;
+    place(t); updateZoom(t); scheduleRender(t);
+  }
+}
+
+/* ---------- rendering ---------- */
+function scheduleRender(s, delay = 160) { clearTimeout(s.timer); s.timer = setTimeout(() => render(s), delay); }
+function capScale(s, maxSide, maxArea) { return Math.min(maxSide / Math.max(s.pw, s.ph), Math.sqrt(maxArea / (s.pw * s.ph))); }
+async function render(s) {
+  const pg = s.pageObj;
+  if (!pg || pg.pageNumber !== s.page || !s.dw) return;
+  const key = s.page + '/' + s.rot;
+  const scale = Math.min((s.dw * dpr()) / s.pw, capScale(s, 8192, 32e6));
+  if (s.canvas && s.canvasKey === key && Math.abs(s.canvas.width - Math.floor(s.pw * scale)) < 2) return;
+  if (s.renderTask) s.renderTask.cancel();
+  const vp = pg.getViewport({ scale, rotation: (pg.rotate + s.rot) % 360 });
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.floor(vp.width)); c.height = Math.max(1, Math.floor(vp.height));
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  const task = pg.render({ canvasContext: ctx, viewport: vp });
+  s.renderTask = task;
+  try { await task.promise; } catch (e) { return; }
+  if (s.renderTask !== task) return;
+  s.renderTask = null;
+  if (s.canvas) s.canvas.remove(); else { const sp = $('.spin', s.view); if (sp) sp.remove(); }
+  s.canvas = c; s.canvasKey = key;
+  s.view.prepend(c);
+  place(s);
+}
+
+/* ---------- loupe ---------- */
+const loupeSize = () => (window.innerWidth < 600 ? 170 : 250);
+const xh = document.createElement('div');
+xh.className = 'xhair'; xh.innerHTML = '<i class="xh-h"></i><i class="xh-v"></i>';
+function drawCross(s, e) {
+  if (xh.parentNode !== s.view) s.view.appendChild(xh);
+  const r = s.view.getBoundingClientRect();
+  xh.firstChild.style.top = (e.clientY - r.top) + 'px';
+  xh.lastChild.style.left = (e.clientX - r.left) + 'px';
+  xh.hidden = false;
+}
+function hoverAt(s, e) {
+  S.hover = { s, e };
+  if (S.hoverMode === 'loupe') drawLoupe(s, e);
+  else if (S.hoverMode === 'cross') drawCross(s, e);
+}
+function hideLoupe() {
+  loupe.hidden = true; xh.hidden = true;
+  $$('.view.lens').forEach(v => v.classList.remove('lens'));
+}
+function requestHi(s, scale) {
+  scale = Math.min(scale, capScale(s, 8192, 36e6));
+  const same = o => o && o.id === s.id && o.key === s.canvasKey && o.scale >= scale * 0.95;
+  if (same(S.hi) || same(S.hiJob)) return;
+  if (S.hiJob) S.hiJob.task.cancel();
+  const pg = s.pageObj, vp = pg.getViewport({ scale, rotation: (pg.rotate + s.rot) % 360 });
+  const c = document.createElement('canvas');
+  c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  const job = { id: s.id, key: s.canvasKey, scale, task: pg.render({ canvasContext: ctx, viewport: vp }) };
+  S.hiJob = job;
+  job.task.promise.then(() => {
+    if (S.hiJob !== job) return;
+    S.hiJob = null; S.hi = { id: job.id, key: job.key, scale, canvas: c };
+    if (S.hover && S.hover.s === s) drawLoupe(s, S.hover.e);
+  }).catch(() => { if (S.hiJob === job) S.hiJob = null; });
+}
+function drawLoupe(s, e) {
+  if (S.hoverMode !== 'loupe' || !s.canvas || s.canvasKey !== s.page + '/' + s.rot) { hideLoupe(); return; }
+  const r = s.canvas.getBoundingClientRect(), vr = s.view.getBoundingClientRect();
+  const px = e.clientX - r.left, py = e.clientY - r.top;
+  if (px < 0 || py < 0 || px > r.width || py > r.height ||
+      e.clientX < vr.left || e.clientX > vr.right || e.clientY < vr.top || e.clientY > vr.bottom) { hideLoupe(); return; }
+  const L = loupeSize(), d = dpr(), need = S.mag * d;
+  let src = s.canvas, k = src.width / r.width;
+  if (S.hi && S.hi.id === s.id && S.hi.key === s.canvasKey) {
+    const hk = S.hi.canvas.width / r.width;
+    if (hk > k) { src = S.hi.canvas; k = hk; }
+  }
+  if (k < need * 0.8) requestHi(s, (need * r.width) / s.pw);
+  if (lc.width !== Math.round(L * d)) { lc.width = lc.height = Math.round(L * d); }
+  const sw = (L / S.mag) * k, sx = px * k - sw / 2, sy = py * k - sw / 2, sc = lc.width / sw;
+  lctx.fillStyle = '#fff'; lctx.fillRect(0, 0, lc.width, lc.height);
+  lctx.imageSmoothingQuality = 'high';
+  const x0 = Math.max(0, sx), y0 = Math.max(0, sy), x1 = Math.min(src.width, sx + sw), y1 = Math.min(src.height, sy + sw);
+  if (x1 > x0 && y1 > y0) lctx.drawImage(src, x0, y0, x1 - x0, y1 - y0, (x0 - sx) * sc, (y0 - sy) * sc, (x1 - x0) * sc, (y1 - y0) * sc);
+  loupe.style.width = loupe.style.height = L + 'px';
+  loupe.style.transform = `translate(${e.clientX - L / 2}px,${e.clientY - L / 2}px)`;
+  ltag.textContent = S.mag + '×' + (k < need * 0.8 ? ' · sharpening' : '');
+  loupe.hidden = false; s.view.classList.add('lens');
+}
+
+/* ---------- markups ---------- */
+// Marks are stored in unrotated page units (PDF points, top-left origin) per page, so they survive zoom, resize and rotation.
+function toRot(g, x, y) { const p = g.vp0.convertToPdfPoint(x, y); return g.vpR.convertToViewportPoint(p[0], p[1]); }
+function toBase(g, x, y) { const p = g.vpR.convertToPdfPoint(x, y); return g.vp0.convertToViewportPoint(p[0], p[1]); }
+function pageFromClient(s, cx, cy) {
+  const r = s.view.getBoundingClientRect(), f = s.dw / s.pw;
+  return toBase(s, (cx - r.left - s.ox) / f, (cy - r.top - s.oy) / f);
+}
+const mmPerPt = s => s.mmPerPt || 0.352778 * (s.scale || 100);
+const scaleLabel = s => s.mmPerPt ? 'calibrated' : '1:' + s.scale;
+const fmtLen = mm => mm >= 10000 ? (mm / 1000).toFixed(2) + ' m' : Math.round(mm).toLocaleString() + ' mm';
+const dist = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+function cloudPath(x0, y0, x1, y1, k) {
+  const r = Math.max(5 * k, Math.min(Math.min(x1 - x0, y1 - y0) / 4, 18 * k));
+  const seg = (ax, ay, bx, by) => {
+    const L = Math.hypot(bx - ax, by - ay), n = Math.max(1, Math.round(L / (r * 1.6))), rr = r2((L / n) * 0.62);
+    let d = '';
+    for (let i = 1; i <= n; i++) d += `A${rr} ${rr} 0 0 1 ${r2(ax + (bx - ax) * i / n)} ${r2(ay + (by - ay) * i / n)}`;
+    return d;
+  };
+  return `M${r2(x0)} ${r2(y0)}` + seg(x0, y0, x1, y0) + seg(x1, y0, x1, y1) + seg(x1, y1, x0, y1) + seg(x0, y1, x0, y0) + 'Z';
+}
+function marksSVG(g, list, f, px, mm) {
+  const k = px / f, sw = r2(2.4 * px);
+  const FONT = 'IBM Plex Sans, Segoe UI, Arial, sans-serif';
+  let out = '';
+  for (const m of list) {
+    const P = m.pts.map(p => toRot(g, p[0], p[1]));
+    const st = `stroke="${m.color}" stroke-width="${sw}" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+    const hit = d => `<path class="hit" d="${d}" stroke="#000" stroke-opacity="0" stroke-width="${14 * px}" vector-effect="non-scaling-stroke" fill="none"/>`;
+    let g2 = '';
+    if (m.type === 'pen') {
+      const d = 'M' + P.map(p => r2(p[0]) + ' ' + r2(p[1])).join('L');
+      g2 = `<path d="${d}" ${st}/>` + hit(d);
+    } else if (m.type === 'rect' || m.type === 'cloud') {
+      const x0 = Math.min(P[0][0], P[1][0]), x1 = Math.max(P[0][0], P[1][0]), y0 = Math.min(P[0][1], P[1][1]), y1 = Math.max(P[0][1], P[1][1]);
+      const d = m.type === 'rect' ? `M${r2(x0)} ${r2(y0)}H${r2(x1)}V${r2(y1)}H${r2(x0)}Z` : cloudPath(x0, y0, x1, y1, k);
+      g2 = `<path d="${d}" ${st}/>` + hit(d);
+    } else if (m.type === 'arrow') {
+      const [a, b] = P, ang = Math.atan2(b[1] - a[1], b[0] - a[0]), c = Math.cos(ang), s = Math.sin(ang);
+      const hl = 16 * k, hw = 6.5 * k, bx = b[0] - hl * c, by = b[1] - hl * s;
+      const d = `M${r2(a[0])} ${r2(a[1])}L${r2(bx)} ${r2(by)}`;
+      g2 = `<path d="${d}" ${st}/><path d="M${r2(b[0])} ${r2(b[1])}L${r2(bx + hw * s)} ${r2(by - hw * c)}L${r2(bx - hw * s)} ${r2(by + hw * c)}Z" fill="${m.color}"/>` + hit(`M${r2(a[0])} ${r2(a[1])}L${r2(b[0])} ${r2(b[1])}`);
+    } else if (m.type === 'measure') {
+      const [a, b] = P, ang = Math.atan2(b[1] - a[1], b[0] - a[0]), nx = -Math.sin(ang) * 7 * k, ny = Math.cos(ang) * 7 * k;
+      const d = `M${r2(a[0])} ${r2(a[1])}L${r2(b[0])} ${r2(b[1])}M${r2(a[0] - nx)} ${r2(a[1] - ny)}L${r2(a[0] + nx)} ${r2(a[1] + ny)}M${r2(b[0] - nx)} ${r2(b[1] - ny)}L${r2(b[0] + nx)} ${r2(b[1] + ny)}`;
+      let deg = ang * 180 / Math.PI; if (deg > 90) deg -= 180; if (deg < -90) deg += 180;
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, rad = deg * Math.PI / 180;
+      const tx = mx + Math.sin(rad) * 7 * k, ty = my - Math.cos(rad) * 7 * k;
+      const label = fmtLen(dist(m.pts[0], m.pts[1]) * mm);
+      g2 = `<path d="${d}" ${st}/>` + hit(d) +
+        `<text x="${r2(tx)}" y="${r2(ty)}" transform="rotate(${r2(deg)} ${r2(tx)} ${r2(ty)})" font-size="${r2(12.5 * k)}" font-family="${FONT}" font-weight="600" text-anchor="middle" fill="${m.color}" stroke="#fff" stroke-width="${r2(3.5 * k)}" paint-order="stroke" stroke-linejoin="round">${escX(label)}</text>`;
+    } else if (m.type === 'text') {
+      const fs = m.size, [x, y] = P[0];
+      const lines = String(m.text).split('\n');
+      g2 = `<text x="${r2(x)}" y="${r2(y + fs * 0.85)}" font-size="${r2(fs)}" font-family="${FONT}" font-weight="600" fill="${m.color}" stroke="#fff" stroke-width="${r2(fs * 0.2)}" paint-order="stroke" stroke-linejoin="round">` +
+        lines.map((l, i) => `<tspan x="${r2(x)}" dy="${i ? '1.2em' : 0}">${escX(l)}</tspan>`).join('') + '</text>';
+    } else if (m.type === 'pin') {
+      const [x, y] = P[0], col = m.resolved ? '#8a949e' : m.color;
+      g2 = `<g transform="translate(${r2(x)} ${r2(y)}) scale(${k})"><path d="M0 0C-4-7-12-11-12-20a12 12 0 1 1 24 0c0 9-8 13-12 20z" fill="${col}" stroke="#fff" stroke-width="1.5"/><text x="0" y="-15.5" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Arial, sans-serif">${m.n}</text></g>`;
+    } else if (m.type === 'stamp') {
+      const L = stampLayout(m, Math.min(P[0][0], P[1][0]), Math.min(P[0][1], P[1][1]), Math.abs(P[1][0] - P[0][0]), Math.abs(P[1][1] - P[0][1]));
+      const t = (y, fs, wt, s) => `<text x="${r2(L.cx)}" y="${r2(y)}" text-anchor="middle" font-size="${r2(fs)}" font-weight="${wt}" fill="${L.hex}" font-family="${FONT}">${escX(s)}</text>`;
+      const d = `M${r2(L.x)} ${r2(L.y)}h${r2(L.w)}v${r2(L.h)}h${r2(-L.w)}Z`;
+      g2 = `<rect x="${r2(L.x)}" y="${r2(L.y)}" width="${r2(L.w)}" height="${r2(L.h)}" rx="${r2(L.h * 0.07)}" fill="#fff" fill-opacity=".6" stroke="${L.hex}" stroke-width="${r2(L.h * 0.035)}"/>` +
+        `<rect x="${r2(L.x + L.in)}" y="${r2(L.y + L.in)}" width="${r2(L.w - 2 * L.in)}" height="${r2(L.h - 2 * L.in)}" rx="${r2(L.h * 0.04)}" fill="none" stroke="${L.hex}" stroke-width="${r2(L.h * 0.012)}"/>` +
+        t(L.y1, L.fs1, 700, L.title) + t(L.y2, L.fs2, 600, L.l2) + (L.l3 ? t(L.y3, L.fs2 * 0.92, 400, L.l3) : '') + hit(d);
+    }
+    out += `<g data-mid="${m.id}" class="mk mk-${m.type}">${g2}</g>`;
+  }
+  return out;
+}
+// Shared stamp layout (top-left x/y, width, height in any y-down unit) so the screen and the saved PDF match.
+function stampLayout(m, x, y, w, h) {
+  const st = STAMP[m.status] || STAMP.approved;
+  const l2 = m.by ? 'Reviewed by ' + m.by : 'Reviewed', l3 = [m.date, m.org].filter(Boolean).join(' · ');
+  const fs1 = Math.min(h * 0.27, (w * 0.86) / (st.title.length * 0.64));
+  const fs2 = Math.min(h * 0.13, (w * 0.86) / (Math.max(l2.length, l3.length * 0.92, 8) * 0.55));
+  return { x, y, w, h, cx: x + w / 2, in: h * 0.07, hex: st.hex, title: st.title, l2, l3, fs1, fs2,
+    y1: y + h * 0.43, y2: y + h * (l3 ? 0.66 : 0.74), y3: y + h * 0.84 };
+}
+function renderMarks(s) {
+  if (!s.vp0 || !s.dw) return;
+  const f = s.dw / s.pw;
+  s.ovF = f;
+  s.ov.setAttribute('viewBox', `0 0 ${s.pw} ${s.ph}`);
+  const list = (s.marks[s.page] || []).concat(s.draft ? [s.draft] : []);
+  s.ov.innerHTML = marksSVG(s, list, f, 1, mmPerPt(s));
+}
+function afterMarks(s, page, pin) {
+  if (s.page === page) renderMarks(s);
+  if (pin) { renderNotes(); updateBadges(); }
+  refreshSheetList(); dirty();
+}
+function addMark(s, m, page = s.page) {
+  m.id = m.id || uid(); m.color = m.color || S.color;
+  (s.marks[page] ||= []).push(m);
+  S.undo.push({ op: 'add', sid: s.id, page, m }); S.redo = [];
+  afterMarks(s, page, m.type === 'pin');
+}
+function deleteMark(s, page, id) {
+  const list = s.marks[page] || [], i = list.findIndex(m => m.id === id);
+  if (i < 0) return;
+  const [m] = list.splice(i, 1);
+  S.undo.push({ op: 'del', sid: s.id, page, m, i }); S.redo = [];
+  afterMarks(s, page, m.type === 'pin');
+}
+function applyOp(op, inverse) {
+  const s = S.sheets.find(x => x.id === op.sid);
+  if (!s) return false;
+  const list = (s.marks[op.page] ||= []);
+  const removeIt = (op.op === 'add') !== inverse;
+  if (removeIt) { const i = list.findIndex(m => m.id === op.m.id); if (i >= 0) list.splice(i, 1); }
+  else list.splice(op.op === 'del' ? Math.min(op.i, list.length) : list.length, 0, op.m);
+  afterMarks(s, op.page, op.m.type === 'pin');
+  return true;
+}
+function undo() {
+  let op;
+  while ((op = S.undo.pop())) { if (applyOp(op, false)) { S.redo.push(op); return; } }
+  toast('Nothing to undo', 1200);
+}
+function redo() {
+  let op;
+  while ((op = S.redo.pop())) { if (applyOp(op, true)) { S.undo.push(op); return; } }
+  toast('Nothing to redo', 1200);
+}
+function allPins() {
+  const out = [];
+  for (const s of S.sheets) for (const [p, list] of Object.entries(s.marks)) for (const m of list) if (m.type === 'pin') out.push({ s, page: +p, m });
+  return out.sort((a, b) => a.m.n - b.m.n);
+}
+
+/* ---------- popovers ---------- */
+function showPopAt(r) {
+  pop.hidden = false;
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let x = r.left, y = r.bottom + 4;
+  if (x + pw > innerWidth - 8) x = innerWidth - 8 - pw;
+  if (y + ph > innerHeight - 8) y = r.top - 4 - ph;
+  pop.style.left = Math.max(8, x) + 'px'; pop.style.top = Math.max(8, y) + 'px';
+}
+function closePop() { pop.hidden = true; pop.innerHTML = ''; }
+function openMenu(anchor, items) {
+  pop.innerHTML = '';
+  for (const it of items) {
+    if (it.sep) { pop.insertAdjacentHTML('beforeend', '<div class="msep"></div>'); continue; }
+    if (it.head) { const h = document.createElement('div'); h.className = 'mhead'; h.textContent = it.head; pop.appendChild(h); continue; }
+    if (it.note) { const h = document.createElement('div'); h.className = 'mnote'; h.textContent = it.note; pop.appendChild(h); continue; }
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'mi' + (it.danger ? ' danger' : '');
+    b.innerHTML = `${it.dot ? `<i class="dot" data-st="${it.dot}"></i>` : ''}<span></span>${it.checked ? '<b class="ck">✓</b>' : ''}`;
+    $('span', b).textContent = it.label;
+    b.addEventListener('click', () => { closePop(); it.act(); });
+    pop.appendChild(b);
+  }
+  showPopAt(anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : anchor);
+  const first = $('.mi', pop); if (first) first.focus({ preventScroll: true });
+}
+function askValue(x, y, o) {
+  pop.innerHTML = `<form class="ask"><label for="askIn"></label><div class="row"><input class="field" id="askIn" autocomplete="off"><button class="btn primary" type="submit"></button></div></form>`;
+  const inp = $('#askIn', pop);
+  $('label', pop).textContent = o.label; $('button', pop).textContent = o.ok || 'OK';
+  inp.type = o.type || 'text'; inp.placeholder = o.placeholder || ''; inp.value = o.value || '';
+  if (o.type === 'number') { inp.min = '0'; inp.step = 'any'; }
+  showPopAt({ left: x, right: x, top: y, bottom: y });
+  setTimeout(() => inp.focus(), 0);
+  $('form', pop).addEventListener('submit', e => {
+    e.preventDefault();
+    const v = inp.value.trim(); if (!v) return;
+    closePop(); o.onOk(v);
+  });
+}
+document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target)) closePop(); }, true);
+
+/* ---------- status & sheet menus ---------- */
+function updateStatusChip(s) {
+  s.stBtn.dataset.st = s.status;
+  $('span', s.stBtn).textContent = STATUS[s.status].short;
+  s.stBtn.title = 'Review status: ' + STATUS[s.status].label;
+}
+function setStatus(s, k) { s.status = k; updateStatusChip(s); refreshSheetList(); dirty(); }
+function statusMenu(s, anchor) {
+  openMenu(anchor, [{ head: 'Review status' }, ...Object.entries(STATUS).map(([k, v]) => ({ label: v.label, dot: k, checked: s.status === k, act: () => setStatus(s, k) })),
+    { sep: true }, { label: 'Place a review stamp on this sheet…', act: () => { select(s); stampMenu(anchor); } }]);
+}
+function stampMenu(anchor) {
+  openMenu(anchor, [{ head: 'Stamp to place' }, ...Object.entries(STAMP).map(([k]) => ({ label: STATUS[k].label, dot: k, checked: S.stampStatus === k,
+    act: () => { S.stampStatus = k; setTool('stamp', false, true); } })),
+    { sep: true }, { note: S.reviewer ? `Signed as ${S.reviewer}${S.org ? ', ' + S.org : ''}` : 'Set your name in Settings so stamps show who reviewed.' }]);
+}
+function moreMenu(s, anchor) {
+  openMenu(anchor, [
+    { label: 'Rotate 90°', act: () => rotate(s) },
+    { label: `Drawing scale (${scaleLabel(s)})…`, act: () => scaleMenu(s, anchor) },
+    { label: 'Compare with another sheet', act: () => openCompare(s.id + ':' + s.page) },
+    ...(multi(s) ? [{ label: `Split into ${s.pages} separate cards`, act: () => splitSheet(s) }] : []),
+    ...(s.lock ? [{ label: 'Merge pages back into one card', act: () => mergeSheet(s) }] : []),
+    { sep: true },
+    { label: 'Remove from board', danger: true, act: () => confirmRemove(s, anchor) }
+  ]);
+}
+function scaleMenu(s, anchor) {
+  const scales = [1, 5, 10, 20, 50, 100, 200, 500, 1000];
+  openMenu(anchor, [{ head: 'Drawing scale for measuring' },
+    { note: 'Correct only if the PDF is at its plotted paper size. Calibrating is more reliable.' },
+    { label: 'Calibrate with a known length', act: () => startCalibrate(s) }, { sep: true },
+    ...scales.map(n => ({ label: '1:' + n, checked: !s.mmPerPt && s.scale === n, act: () => { s.scale = n; s.mmPerPt = null; s.ovF = 0; renderMarks(s); dirty(); toast(`${s.name}: scale set to 1:${n}`); } }))]);
+}
+function startCalibrate(s) {
+  S.calibrate = s.id; setTool('measure', true); select(s);
+  toast(`Drag along a dimension you know on ${s.name}`, 4000);
+}
+const STATUS_RANK = ['revise', 'comments', 'none', 'approved'];
+async function splitSheet(s) {
+  if (!multi(s)) return;
+  const at = S.sheets.indexOf(s), made = [];
+  toast(`Splitting ${s.name} into ${s.pages} cards…`, 60000);
+  for (let p = 1; p <= s.pages; p++) {
+    made.push(await addPdf(`${s.base} · p${p}`, null, s.isSample, { pdf: s.pdf, fkey: s.fkey, base: s.base, lock: true, page: p,
+      rot: s.rot, status: s.status, scale: s.scale, mmPerPt: s.mmPerPt, marks: s.marks[p] ? { [p]: s.marks[p] } : {} }));
+  }
+  removeSheet(s, true);
+  S.sheets = S.sheets.filter(x => !made.includes(x));
+  S.sheets.splice(Math.min(at, S.sheets.length), 0, ...made);
+  S.undo = S.undo.filter(op => op.sid !== s.id); S.redo = S.redo.filter(op => op.sid !== s.id);
+  if (S.sel === s) S.sel = null;
+  tile(true); refresh(); dirty();
+  toast(`${s.base}: one card per page. Use ⋯ on any of them to merge back.`, 3500);
+}
+async function mergeSheet(s) {
+  const sibs = S.sheets.filter(x => x.pdf === s.pdf && x.lock);
+  const at = S.sheets.indexOf(sibs[0]), marks = {};
+  sibs.forEach(x => { if (x.marks[x.page] && x.marks[x.page].length) marks[x.page] = (marks[x.page] || []).concat(x.marks[x.page]); });
+  const status = STATUS_RANK.find(k => sibs.some(x => x.status === k)) || 'none';
+  const merged = await addPdf(s.base, null, s.isSample, { pdf: s.pdf, fkey: s.fkey, base: s.base, page: s.page, rot: s.rot,
+    status: sibs.every(x => x.status === sibs[0].status) ? sibs[0].status : status, scale: s.scale, mmPerPt: s.mmPerPt, marks });
+  for (const x of sibs) { removeSheet(x, true); S.undo = S.undo.filter(op => op.sid !== x.id); S.redo = S.redo.filter(op => op.sid !== x.id); }
+  S.sheets = S.sheets.filter(x => x !== merged);
+  S.sheets.splice(Math.min(at, S.sheets.length), 0, merged);
+  S.sel = null; select(merged);
+  tile(true); refresh(); dirty();
+  toast(`${s.base}: pages merged into one card`);
+}
+async function rotate(s) {
+  s.rot = (s.rot + 90) % 360; s.zoom = 1; updateZoom(s);
+  s.vpR = s.pageObj.getViewport({ scale: 1, rotation: (s.pageObj.rotate + s.rot) % 360 });
+  s.pw = s.vpR.width; s.ph = s.vpR.height; s.ovF = 0;
+  place(s); render(s); dirty();
+  if (S.auto) tile(false);
+}
+
+/* ---------- pointer interactions ---------- */
+function track(e, onMove, onEnd) {
+  const t = e.currentTarget; t.setPointerCapture(e.pointerId);
+  const mv = ev => { if (ev.pointerId === e.pointerId) onMove(ev); };
+  const up = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    t.removeEventListener('pointermove', mv); t.removeEventListener('pointerup', up); t.removeEventListener('pointercancel', up);
+    if (onEnd) onEnd(ev);
+  };
+  t.addEventListener('pointermove', mv); t.addEventListener('pointerup', up); t.addEventListener('pointercancel', up);
+}
+function clearMax(s) { if (s.prev) { s.prev = null; updateMaxBtn(s); } }
+function startMove(s, e) {
+  const sx = e.clientX, sy = e.clientY, x0 = s.x, y0 = s.y; let moved = false;
+  s.el.classList.add('moving'); hideLoupe();
+  track(e, ev => {
+    const dx = ev.clientX - sx, dy = ev.clientY - sy;
+    if (!moved && Math.hypot(dx, dy) < 3) return;
+    moved = true; S.auto = false; clearMax(s);
+    s.x = x0 + dx; s.y = y0 + dy; clampPos(s); applyRect(s);
+  }, () => { s.el.classList.remove('moving'); if (moved) dirty(); });
+}
+function startResize(s, e) {
+  const sx = e.clientX, sy = e.clientY, w0 = s.w, h0 = s.h;
+  select(s); hideLoupe();
+  track(e, ev => {
+    S.auto = false; clearMax(s);
+    s.w = Math.max(180, w0 + ev.clientX - sx); s.h = Math.max(130, h0 + ev.clientY - sy); applyRect(s);
+  }, () => dirty());
+}
+const DRAW_TOOLS = ['pen', 'cloud', 'rect', 'arrow', 'measure'];
+function bindView(s) {
+  const v = s.view;
+  v.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0 && e.button !== 1) return;
+    if (e.button === 1) e.preventDefault();
+    v.setPointerCapture(e.pointerId);
+    s.ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    hideLoupe();
+    if (s.ptrs.size === 2) {
+      if (s.draft) { s.draft = null; renderMarks(s); }
+      s.tapAt = null;
+      const [a, b] = [...s.ptrs.values()];
+      s.pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, z: s.zoom }; s.drag = null; return;
+    }
+    if (s.ptrs.size > 2 || !s.dw) return;
+    const tool = S.tool, panIntent = e.button === 1 || S.space || tool === 'select';
+    const mk = e.target.closest && e.target.closest('[data-mid]');
+    if (!panIntent && tool === 'eraser') { if (mk) deleteMark(s, s.page, mk.dataset.mid); return; }
+    if (tool === 'select' && mk && mk.classList.contains('mk-pin')) { focusNote(mk.dataset.mid); return; }
+    if (!panIntent && (tool === 'text' || tool === 'pin' || tool === 'stamp')) { s.tapAt = { x: e.clientX, y: e.clientY, p: pageFromClient(s, e.clientX, e.clientY) }; return; }
+    if (!panIntent && DRAW_TOOLS.includes(tool)) {
+      const p = pageFromClient(s, e.clientX, e.clientY);
+      s.draft = { type: tool, color: S.color, pts: tool === 'pen' ? [p] : [p, p] };
+      return;
+    }
+    s.drag = { move: tool === 'select' && !S.space && e.button !== 1 && (s.zoom <= 1.001 || e.altKey), sx: e.clientX, sy: e.clientY, x: s.x, y: s.y, ox: s.ox, oy: s.oy, moved: false };
+    v.classList.add('grabbing');
+    if (s.drag.move) s.el.classList.add('moving');
+  });
+  v.addEventListener('pointermove', e => {
+    if (s.ptrs.has(e.pointerId)) s.ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    if (s.pinch && s.ptrs.size >= 2) {
+      const [a, b] = [...s.ptrs.values()], r = v.getBoundingClientRect();
+      zoomTo(s, s.pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / s.pinch.d, (a[0] + b[0]) / 2 - r.left, (a[1] + b[1]) / 2 - r.top);
+      return;
+    }
+    if (s.draft) {
+      const p = pageFromClient(s, e.clientX, e.clientY), d = s.draft;
+      if (d.type === 'pen') { if (dist(d.pts[d.pts.length - 1], p) > 1.5 / (s.dw / s.pw)) d.pts.push(p); }
+      else d.pts[1] = p;
+      renderMarks(s); return;
+    }
+    if (s.drag) {
+      const dx = e.clientX - s.drag.sx, dy = e.clientY - s.drag.sy;
+      if (!s.drag.moved && Math.hypot(dx, dy) < 3) return;
+      s.drag.moved = true;
+      if (s.drag.move) { S.auto = false; clearMax(s); s.x = s.drag.x + dx; s.y = s.drag.y + dy; clampPos(s); applyRect(s); }
+      else { s.ox = s.drag.ox + dx; s.oy = s.drag.oy + dy; place(s); syncFrom(s); }
+      return;
+    }
+    if (e.pointerType !== 'touch' && !s.ptrs.size) hoverAt(s, e);
+  });
+  const end = e => {
+    const wasLast = s.ptrs.size === 1 && s.ptrs.has(e.pointerId);
+    s.ptrs.delete(e.pointerId);
+    if (s.ptrs.size < 2) s.pinch = null;
+    if (wasLast && e.type === 'pointerup') {
+      if (s.draft) finishDraft(s, e);
+      else if (s.tapAt && Math.hypot(e.clientX - s.tapAt.x, e.clientY - s.tapAt.y) < 6) placeAt(s, s.tapAt.p, e);
+    }
+    if (!s.ptrs.size) {
+      if (s.draft) { s.draft = null; renderMarks(s); }
+      s.tapAt = null;
+      if (s.drag && s.drag.moved && s.drag.move) dirty();
+      s.drag = null; v.classList.remove('grabbing'); s.el.classList.remove('moving');
+    }
+  };
+  v.addEventListener('pointerup', end);
+  v.addEventListener('pointercancel', end);
+  v.addEventListener('pointerleave', () => { if (!s.ptrs.size) { hideLoupe(); if (S.hover && S.hover.s === s) S.hover = null; } });
+  v.addEventListener('wheel', e => {
+    e.preventDefault(); select(s);
+    const dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
+    const r = v.getBoundingClientRect();
+    zoomTo(s, s.zoom * Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0018)), e.clientX - r.left, e.clientY - r.top);
+    hoverAt(s, e);
+  }, { passive: false });
+  v.addEventListener('dblclick', e => {
+    if (S.tool !== 'select' || (e.target.closest && e.target.closest('.mk-pin'))) return;
+    const r = v.getBoundingClientRect();
+    if (s.zoom < 1.5) zoomTo(s, 3, e.clientX - r.left, e.clientY - r.top); else fit(s);
+  });
+}
+function finishDraft(s, e) {
+  const d = s.draft; s.draft = null;
+  const f = s.dw / s.pw;
+  const ok = d.type === 'pen' ? d.pts.length > 1 : dist(d.pts[0], d.pts[1]) > 4 / f;
+  if (!ok) { renderMarks(s); return; }
+  addMark(s, d);
+  if (d.type === 'measure' && S.calibrate === s.id) {
+    const lenPt = dist(d.pts[0], d.pts[1]);
+    askValue(e.clientX, e.clientY, { label: 'Real length of this line, in millimetres', type: 'number', placeholder: 'For example 7200', ok: 'Set scale', onOk: v => {
+      const mm = parseFloat(v);
+      if (!(mm > 0)) { toast('Enter a length in millimetres, for example 7200.'); return; }
+      s.mmPerPt = mm / lenPt; S.calibrate = null; s.ovF = 0; renderMarks(s); setTool('measure'); dirty();
+      toast(`${s.name}: scale calibrated`);
+    } });
+  }
+}
+function placeAt(s, p, e) {
+  if (S.tool === 'pin') {
+    const m = { type: 'pin', pts: [p], n: ++S.pinSeq, text: '', resolved: false, created: Date.now() };
+    addMark(s, m);
+    focusNote(m.id);
+  } else if (S.tool === 'text') {
+    askValue(e.clientX, e.clientY, { label: 'Text to place on the drawing', placeholder: 'For example: Check door width', ok: 'Place', onOk: t =>
+      addMark(s, { type: 'text', pts: [p], text: t, size: Math.max(s.pw, s.ph) * 0.016 }) });
+  } else if (S.tool === 'stamp') {
+    const place = () => {
+      const w = Math.max(s.vp0.width, s.vp0.height) * 0.2, h = w * 0.34;
+      const x = clamp(p[0] - w / 2, 0, Math.max(0, s.vp0.width - w)), y = clamp(p[1] - h / 2, 0, Math.max(0, s.vp0.height - h));
+      addMark(s, { type: 'stamp', status: S.stampStatus, pts: [[x, y], [x + w, y + h]], by: S.reviewer, org: S.org, date: fmtDate(new Date()), color: STAMP[S.stampStatus].hex });
+      if (s.status !== S.stampStatus) setStatus(s, S.stampStatus);
+    };
+    if (S.reviewer) place();
+    else askValue(e.clientX, e.clientY, { label: 'Your name, shown on review stamps', placeholder: 'For example: A. Kandel', ok: 'Stamp', onOk: v => { S.reviewer = v; store.set('reviewer', v); place(); } });
+  }
+}
+
+/* ---------- tools ---------- */
+const TOOLS = [
+  ['select', 'v', 'Select and move', 'Drag a sheet to move it. Scroll to zoom, drag to pan once zoomed. Click a pin to open its comment.'],
+  ['pen', 'p', 'Pen', 'Drag on a sheet to draw freehand.'],
+  ['cloud', 'c', 'Revision cloud', 'Drag a box to draw a revision cloud.'],
+  ['rect', 'r', 'Rectangle', 'Drag to draw a rectangle.'],
+  ['arrow', 'a', 'Arrow', 'Drag from the tail to the point of the arrow.'],
+  ['text', 't', 'Text', 'Click where the text should go.'],
+  ['pin', 'n', 'Comment pin', 'Click to drop a numbered comment pin, then type the comment.'],
+  ['measure', 'm', 'Measure', 'Drag between two points to measure. Set the scale from the sheet’s ⋯ menu.'],
+  ['stamp', 's', 'Review stamp', 'Click on a sheet to place the stamp. It also sets the sheet’s review status.'],
+  ['eraser', 'e', 'Eraser', 'Click a markup to delete it. Undo with Ctrl+Z.']
+];
+const HOVERS = [
+  ['arrow', 'Hover: plain pointer', 'M4 2.5l8.5 6-3.8.9 2.3 4.4-1.8.9-2.3-4.4L4 13z'],
+  ['loupe', 'Hover: magnifying glass (L)', 'M7 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zM10.6 10.6l3.9 3.9'],
+  ['cross', 'Hover: crosshair lines for lining things up', 'M8 1.5v13M1.5 8h13']
+];
+const MAGS = [2, 3, 4, 6, 8];
+const rail = $('#rail');
+rail.innerHTML = TOOLS.map(([t, k, label]) => `<button class="tb" type="button" data-tool="${t}" title="${label} (${k.toUpperCase()})" aria-label="${label}" aria-pressed="${t === 'select'}">${svg(P[t])}</button>`).join('') +
+  '<div class="rsep"></div><div class="rlabel">Hover</div>' +
+  HOVERS.map(([h, label, icon]) => `<button class="tb" type="button" data-hover="${h}" title="${label}" aria-label="${label}" aria-pressed="false">${svg(icon)}</button>`).join('') +
+  `<button class="tb mag" type="button" id="magBtn" title="Magnifier strength (click to change)" aria-label="Magnifier strength"></button>` +
+  '<div class="rsep"></div>' +
+  COLORS.map((c, i) => `<button class="tb" type="button" data-color="${c}" title="${COLOR_NAMES[i]} markup" aria-label="${COLOR_NAMES[i]} markup colour" aria-pressed="${i === 0}"><span class="swatch" style="background:${c}"></span></button>`).join('') +
+  '<div class="rsep"></div>' +
+  `<button class="tb" type="button" id="undoBtn" title="Undo (Ctrl+Z)" aria-label="Undo">${svg(P.undo)}</button><button class="tb" type="button" id="redoBtn" title="Redo (Ctrl+Y)" aria-label="Redo">${svg(P.redo)}</button>`;
+rail.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.tool === 'stamp' && S.tool === 'stamp') stampMenu(b);
+  else if (b.dataset.tool) setTool(b.dataset.tool);
+  else if (b.dataset.hover) setHover(b.dataset.hover);
+  else if (b.id === 'magBtn') { S.mag = MAGS[(MAGS.indexOf(S.mag) + 1) % MAGS.length]; store.set('mag', S.mag); setHover('loupe', true); toast(`Magnifier ${S.mag}×`, 1200); }
+  else if (b.dataset.color) setColor(b.dataset.color);
+  else if (b.id === 'undoBtn') undo();
+  else if (b.id === 'redoBtn') redo();
+});
+function setTool(t, keepCal, quiet) {
+  if (!keepCal && t !== 'measure') S.calibrate = null;
+  const wasStamp = S.tool === 'stamp';
+  S.tool = t; board.dataset.tool = t;
+  $$('[data-tool]', rail).forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === t));
+  if (t === 'stamp' && !quiet && !wasStamp) stampMenu($('[data-tool="stamp"]', rail));
+  const def = TOOLS.find(x => x[0] === t);
+  const cal = S.calibrate && S.sheets.find(s => s.id === S.calibrate);
+  $('#toolhint').innerHTML = cal ? `<b>Calibrating ${escX(cal.name)}:</b> drag along a dimension you know.`
+    : t === 'stamp' ? `<b>Review stamp (${escX(STATUS[S.stampStatus].label)}):</b> click on a sheet to place it. Click the stamp tool again to pick a different stamp.`
+    : `<b>${def[2]}:</b> ${escX(def[3])}${t !== 'select' ? ' Hold Space to pan.' : ''}`;
+  if (S.link) $('#toolhint').insertAdjacentHTML('beforeend', ' <b>Link zoom is on:</b> all sheets zoom together.');
+}
+function setHover(h, quiet) {
+  if (!MAGS.includes(S.mag)) S.mag = 3;
+  S.hoverMode = h; board.dataset.hover = h; store.set('hover', h);
+  $$('[data-hover]', rail).forEach(b => b.setAttribute('aria-pressed', b.dataset.hover === h));
+  $('#magBtn').textContent = S.mag + '×';
+  hideLoupe();
+  if (S.hover) hoverAt(S.hover.s, S.hover.e);
+  if (!quiet) toast({ arrow: 'Hover: plain pointer', loupe: `Hover: magnifying glass ${S.mag}×`, cross: 'Hover: crosshair lines' }[h], 1400);
+}
+function setColor(c) { S.color = c; $$('[data-color]', rail).forEach(b => b.setAttribute('aria-pressed', b.dataset.color === c)); }
+
+/* ---------- layout ---------- */
+function tile(resetZoom = true) {
+  // Justified rows: each card keeps its own paper shape (A4 portrait next to A3 landscape),
+  // rows are stretched to the board width, and the tallest row height that still fits the board wins.
+  const B = boardSize(), n = S.sheets.length;
+  if (!n || B.w < 60 || B.h < 60) return;
+  const W2 = B.w - 2 * GAP, H2 = B.h - 2 * GAP;
+  const pack = h => {
+    const rows = []; let cur = [], sum = 0;
+    for (const s of S.sheets) {
+      cur.push(s); sum += s.pw / s.ph;
+      if (sum * h + GAP * (cur.length - 1) >= W2) { rows.push({ items: cur, sum, h: (W2 - GAP * (cur.length - 1)) / sum }); cur = []; sum = 0; }
+    }
+    if (cur.length) rows.push({ items: cur, sum, h: Math.min(h, (W2 - GAP * (cur.length - 1)) / sum) });
+    return { rows, total: rows.reduce((a, r) => a + r.h + BAR, 0) + GAP * (rows.length - 1) };
+  };
+  let h = Math.max(20, H2 - BAR), lay = pack(h);
+  while (lay.total > H2 && h > 12) { h *= 0.97; lay = pack(h); }
+  let y = GAP + Math.max(0, (H2 - lay.total) / 2);
+  for (const row of lay.rows) {
+    let x = GAP + Math.max(0, (W2 - (row.sum * row.h + GAP * (row.items.length - 1))) / 2);
+    for (const s of row.items) {
+      s.w = (s.pw / s.ph) * row.h; s.h = row.h + BAR; s.x = x; s.y = y; s.prev = null;
+      x += s.w + GAP;
+      if (resetZoom) s.zoom = 1;
+      applyRect(s); updateMaxBtn(s); updateZoom(s);
+    }
+    y += row.h + BAR + GAP;
+  }
+  S.auto = true; dirty();
+}
+function updateMaxBtn(s) {
+  s.maxBtn.innerHTML = svg(s.prev ? P.restore : P.max);
+  s.maxBtn.title = s.prev ? 'Restore size (Esc)' : 'Maximize';
+}
+function toggleMax(s) {
+  if (s.prev) { Object.assign(s, s.prev); s.prev = null; }
+  else {
+    const B = boardSize();
+    s.prev = { x: s.x, y: s.y, w: s.w, h: s.h };
+    s.x = GAP; s.y = GAP; s.w = B.w - 2 * GAP; s.h = B.h - 2 * GAP;
+  }
+  select(s); s.zoom = 1; applyRect(s); updateMaxBtn(s); updateZoom(s); hideLoupe();
+}
+new ResizeObserver(() => {
+  if (S.auto) tile(false);
+  else S.sheets.forEach(s => { clampPos(s); applyRect(s); });
+}).observe(board);
+
+/* ---------- review panel ---------- */
+function updateBadges() {
+  const open = allPins().filter(x => !x.m.resolved).length;
+  $('#noteBadge').textContent = open || '';
+  $('#topBadge').textContent = open || '';
+}
+function refresh() {
+  const n = S.sheets.length, { files, pages } = countPages();
+  $('#count').textContent = n ? `${files} ${files === 1 ? 'file' : 'files'} · ${pages} ${pages === 1 ? 'page' : 'pages'}${n !== files ? ` · ${n} cards` : ''}` : 'No files';
+  emptyEl.hidden = n > 0;
+  $('#notice').hidden = !S.sheets.some(s => s.isSample);
+  $('#tileBtn').disabled = $('#clearBtn').disabled = !n;
+  $('#cmpBtn').disabled = pages < 2;
+  updateBadges(); refreshSheetList(); renderNotes();
+}
+function refreshSheetList() {
+  const q = $('#sheetSearch').value.trim().toLowerCase();
+  const list = $('#sheetList'); list.innerHTML = '';
+  const counts = { approved: 0, comments: 0, revise: 0, none: 0 };
+  S.sheets.forEach(s => counts[s.status]++);
+  $('#stSum').innerHTML = S.sheets.length ? Object.keys(STATUS).map(k => `<span><b>${counts[k]}</b><em data-st="${k}"><i class="dot"></i>${k === 'none' ? 'To review' : STATUS[k].short}</em></span>`).join('') : '';
+  $('#splitAllBtn').hidden = !S.sheets.some(multi);
+  const shown = S.sheets.filter(s => !q || s.name.toLowerCase().includes(q));
+  if (!S.sheets.length) { list.innerHTML = '<p class="pempty">No sheets yet. Add PDFs to start a review.</p>'; return; }
+  if (!shown.length) { list.innerHTML = '<p class="pempty">No sheets match that filter.</p>'; return; }
+  for (const s of shown) {
+    const pins = Object.values(s.marks).flat().filter(m => m.type === 'pin'), open = pins.filter(m => !m.resolved).length;
+    const marks = Object.values(s.marks).flat().length;
+    const it = document.createElement('div');
+    it.className = 'sitem' + (S.sel === s ? ' on' : ''); it.tabIndex = 0; it.dataset.sid = s.id;
+    it.innerHTML = `<div class="sl1"><span class="sn"></span><button class="st" type="button" data-st="${s.status}"><i></i><span>${STATUS[s.status].short}</span></button></div><div class="sl2"></div>`;
+    $('.sn', it).textContent = s.name;
+    $('.sl2', it).textContent = `${s.lock ? `page ${s.page} of ${s.pages}` : `${s.pages} ${s.pages === 1 ? 'page' : 'pages'}`} ·${marks} ${marks === 1 ? 'markup' : 'markups'} · ${pins.length ? `${open} open of ${pins.length} comments` : 'no comments'}`;
+    $('.st', it).addEventListener('click', e => { e.stopPropagation(); statusMenu(s, e.currentTarget); });
+    it.addEventListener('click', () => { select(s); if (innerWidth <= 820) togglePanel(false); });
+    it.addEventListener('dblclick', () => toggleMax(s));
+    it.addEventListener('keydown', e => { if (e.key === 'Enter') select(s); });
+    list.appendChild(it);
+  }
+}
+$('#sheetSearch').addEventListener('input', refreshSheetList);
+$('#splitAllBtn').addEventListener('click', async e => {
+  e.currentTarget.disabled = true;
+  for (const s of S.sheets.filter(multi)) await splitSheet(s);
+  e.currentTarget.disabled = false;
+});
+function renderNotes() {
+  const list = $('#noteList');
+  const act = document.activeElement, keep = act && act.closest && act.closest('#noteList') && act.id;
+  list.innerHTML = '';
+  const pins = allPins().filter(x => S.noteFilter === 'all' || (S.noteFilter === 'open' ? !x.m.resolved : x.m.resolved));
+  if (!pins.length) {
+    list.innerHTML = `<p class="pempty">${allPins().length ? 'No comments in this view.' : 'No comments yet. Pick the comment pin tool (N) and click on a drawing to add one.'}</p>`;
+    return;
+  }
+  for (const { s, page, m } of pins) {
+    const it = document.createElement('div');
+    it.className = 'note' + (m.resolved ? ' done' : ''); it.dataset.note = m.id;
+    it.innerHTML = `<div class="nhead"><span class="pinno"></span><button type="button" class="nlink" title="Show on drawing"></button><label class="nres"><input type="checkbox"> Resolved</label><button type="button" class="ib" title="Delete comment" aria-label="Delete comment">${svg(P.close)}</button></div><textarea rows="2" placeholder="Write a comment…"></textarea>`;
+    const no = $('.pinno', it); no.textContent = m.n; no.style.background = m.resolved ? '#8a949e' : m.color;
+    $('.nlink', it).textContent = pageLabel(s, page);
+    $('.nlink', it).addEventListener('click', () => gotoMark(s, page, m));
+    const cb = $('input', it); cb.checked = !!m.resolved; cb.id = 'res-' + m.id;
+    cb.addEventListener('change', () => {
+      m.resolved = cb.checked; it.classList.toggle('done', m.resolved); no.style.background = m.resolved ? '#8a949e' : m.color;
+      if (s.page === page) renderMarks(s);
+      updateBadges(); refreshSheetList(); dirty();
+    });
+    $('.ib', it).addEventListener('click', () => deleteMark(s, page, m.id));
+    const ta = $('textarea', it); ta.id = 'note-' + m.id; ta.value = m.text || '';
+    ta.addEventListener('input', () => { m.text = ta.value; dirty(); });
+    ta.addEventListener('focus', () => { if (s.page === page) flashMark(s, m.id); });
+    list.appendChild(it);
+  }
+  if (keep) { const el = document.getElementById(keep); if (el) el.focus({ preventScroll: true }); }
+}
+$('#noteFilter').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  S.noteFilter = b.dataset.f;
+  $$('button', e.currentTarget).forEach(x => x.setAttribute('aria-pressed', x === b));
+  renderNotes();
+});
+function setTab(tab) {
+  $$('.ptab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === tab));
+  $('#tabSheets').hidden = tab !== 'sheets'; $('#tabNotes').hidden = tab !== 'notes';
+}
+$$('.ptab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+function togglePanel(open) {
+  const show = open === undefined ? panel.hidden : open;
+  panel.hidden = !show; $('#panelBtn').setAttribute('aria-pressed', show);
+}
+$('#panelBtn').addEventListener('click', () => togglePanel());
+$('#panelClose').addEventListener('click', () => togglePanel(false));
+function focusNote(id) {
+  togglePanel(true); setTab('notes');
+  if (S.noteFilter !== 'all') { S.noteFilter = 'all'; $$('#noteFilter button').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === 'all')); }
+  renderNotes();
+  const ta = document.getElementById('note-' + id);
+  if (ta) { ta.scrollIntoView({ block: 'nearest' }); setTimeout(() => ta.focus({ preventScroll: true }), 0); }
+}
+function flashMark(s, id) {
+  const g = $(`[data-mid="${id}"]`, s.ov); if (!g) return;
+  g.classList.remove('flash'); void g.getBoundingClientRect(); g.classList.add('flash');
+}
+async function gotoMark(s, page, m) {
+  select(s);
+  if (innerWidth <= 820) togglePanel(false);
+  if (s.page !== page) await goPage(s, 0, page);
+  const vw = s.view.clientWidth, vh = s.view.clientHeight;
+  const P0 = toRot(s, m.pts[0][0], m.pts[0][1]);
+  s.zoom = Math.max(s.zoom, 2.5);
+  const f = Math.min(vw / s.pw, vh / s.ph) * s.zoom;
+  s.ox = vw / 2 - P0[0] * f; s.oy = vh / 2 - P0[1] * f;
+  place(s); updateZoom(s); scheduleRender(s); syncFrom(s);
+  setTimeout(() => flashMark(s, m.id), 50);
+}
+
+/* ---------- adding files ---------- */
+async function addFiles(list) {
+  if (!window.pdfjsLib) { toast('The PDF engine didn’t load. Reload the page and try again.'); return; }
+  const files = [...list].filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+  if (!files.length) { toast('Those files aren’t PDFs. Choose .pdf drawing files.'); return; }
+  if (S.sheets.some(s => s.isSample)) {
+    S.sheets.filter(s => s.isSample).forEach(removeSheet);
+    S.undo = []; S.redo = []; S.pinSeq = Math.max(0, ...allPins().map(x => x.m.n)); S.auto = true;
+  }
+  if (!S.sheets.length) S.auto = true;
+  toast(`Opening ${files.length} ${files.length === 1 ? 'PDF' : 'PDFs'}…`, 60000);
+  const added = [], failed = [];
+  for (const f of files) {
+    try { added.push(await addPdf(f.name.replace(/\.pdf$/i, ''), new Uint8Array(await f.arrayBuffer()), false)); }
+    catch (e) { failed.push(f.name); }
+  }
+  if (S.auto) tile(true);
+  else {
+    const B = boardSize(), w = Math.min(380, B.w - 2 * GAP);
+    added.forEach((s, k) => {
+      s.w = w; s.h = Math.min(B.h - 2 * GAP, w * (s.ph / s.pw) + BAR);
+      s.x = GAP + (k * 28) % Math.max(28, B.w - w - GAP); s.y = GAP + (k * 28) % Math.max(28, B.h - s.h - GAP);
+      applyRect(s); select(s);
+    });
+  }
+  refresh(); dirty();
+  if (failed.length) toast(`Couldn’t open ${failed.join(', ')}. The file may be damaged or password-protected.`, 6000);
+  else {
+    const big = added.filter(multi);
+    toast(big.length
+      ? `Added ${added.length} ${added.length === 1 ? 'PDF' : 'PDFs'}. ${big[0].name} has ${big[0].pages} pages: use its ⋯ menu to split it into one card per page.`
+      : `Added ${added.length} ${added.length === 1 ? 'PDF' : 'PDFs'}. Your review is saved in this browser as you work.`, 5000);
+  }
+}
+const fileInput = $('#fileInput');
+const pick = () => fileInput.click();
+$('#addBtn').addEventListener('click', pick);
+$('#emptyAdd').addEventListener('click', pick);
+fileInput.addEventListener('change', () => { if (fileInput.files.length) addFiles(fileInput.files); fileInput.value = ''; });
+let dragDepth = 0;
+const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+document.addEventListener('dragenter', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth++; dropEl.hidden = false; });
+document.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+document.addEventListener('dragleave', e => { if (!hasFiles(e)) return; if (--dragDepth <= 0) { dragDepth = 0; dropEl.hidden = true; } });
+document.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth = 0; dropEl.hidden = true; addFiles(e.dataTransfer.files); });
+
+/* ---------- toolbar ---------- */
+$('#tileBtn').addEventListener('click', () => tile(true));
+function toggleLoupe() { setHover(S.hoverMode === 'loupe' ? 'arrow' : 'loupe'); }
+// Ctrl+scroll and trackpad pinch anywhere on the page would zoom the whole browser page. Keep zoom on one sheet instead.
+document.addEventListener('wheel', e => {
+  if (!(e.ctrlKey || e.metaKey)) return;
+  e.preventDefault();
+  if (e.target.closest && (e.target.closest('.view') || e.target.closest('#cmpStage'))) return;
+  if (S.sel && !C.open) zoomCenter(S.sel, Math.exp(-e.deltaY * 0.01));
+}, { passive: false, capture: true });
+function toggleLink() {
+  S.link = !S.link; $('#linkBtn').setAttribute('aria-pressed', S.link);
+  if (S.link && S.sel) syncFrom(S.sel);
+  setTool(S.tool, true);
+  toast(S.link ? 'Zoom linked: every sheet follows the one you zoom' : 'Zoom unlinked', 2000);
+}
+$('#linkBtn').addEventListener('click', toggleLink);
+const clearBtn = $('#clearBtn'); let clearT;
+function disarm() { delete clearBtn.dataset.arm; clearBtn.textContent = 'Clear all'; clearBtn.classList.remove('danger'); }
+clearBtn.addEventListener('click', async () => {
+  if (clearBtn.dataset.arm) {
+    clearTimeout(clearT); [...S.sheets].forEach(removeSheet); disarm();
+    S.auto = true; S.undo = []; S.redo = []; S.pinSeq = 0; await idb.clear(); refresh(); toast('Board cleared');
+  } else { clearBtn.dataset.arm = '1'; clearBtn.textContent = 'Confirm clear'; clearBtn.classList.add('danger'); clearT = setTimeout(disarm, 3000); }
+});
+
+/* ---------- compare ---------- */
+const C = { open: false, mode: 'overlay', dx: 0, dy: 0, zoom: 1, ox: 0, oy: 0, canvas: null, A: null, B: null, tA: null, tB: null, job: 0 };
+const stage = $('#cmpStage'), cmpEl = $('#cmp'), cmpA = $('#cmpA'), cmpB = $('#cmpB');
+function pageOptions() {
+  const o = [];
+  S.sheets.forEach(s => cardPages(s).forEach(p => o.push([s.id + ':' + p, pageLabel(s, p)])));
+  return o;
+}
+function openCompare(aKey, bKey) {
+  const opts = pageOptions();
+  if (opts.length < 2) { toast('Add at least two drawings to compare.'); return; }
+  [cmpA, cmpB].forEach(sel => { sel.innerHTML = ''; opts.forEach(([k, l]) => sel.add(new Option(l, k))); });
+  const sup = S.sheets.find(s => s.isSample && /superseded/i.test(s.name)), cur = S.sheets.find(s => s.isSample && s.name === 'A-100 Floor Plans');
+  if (!aKey && sup && cur) { aKey = sup.id + ':1'; bKey = cur.id + ':1'; }
+  aKey = aKey || (S.sel ? S.sel.id + ':' + S.sel.page : opts[0][0]);
+  if (!bKey) { const i = opts.findIndex(o => o[0] === aKey); bKey = opts[(i + 1) % opts.length][0]; }
+  cmpA.value = aKey; cmpB.value = bKey;
+  cmpEl.hidden = false; C.open = true; hideLoupe(); closePop();
+  buildCompare();
+}
+function closeCompare() { cmpEl.hidden = true; C.open = false; C.job++; C.A = C.B = C.tA = C.tB = null; if (C.canvas) { C.canvas.width = C.canvas.height = 1; } }
+async function renderFor(key, W) {
+  const [id, p] = key.split(':').map(Number);
+  const s = S.sheets.find(x => x.id === id);
+  const pg = await s.pdf.getPage(p), rot = (pg.rotate + s.rot) % 360;
+  const v1 = pg.getViewport({ scale: 1, rotation: rot });
+  const sc = Math.min(W / v1.width, Math.sqrt(12e6 / (v1.width * v1.height)));
+  const vp = pg.getViewport({ scale: sc, rotation: rot });
+  const c = document.createElement('canvas'); c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  await pg.render({ canvasContext: ctx, viewport: vp }).promise;
+  return c;
+}
+function tint(src, color) {
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+  const x = c.getContext('2d'); x.drawImage(src, 0, 0);
+  x.globalCompositeOperation = 'lighten'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height);
+  return c;
+}
+async function buildCompare() {
+  const job = ++C.job;
+  stage.innerHTML = '<div class="spin">Rendering both sheets…</div>'; C.canvas = null;
+  const W = clamp(Math.round(Math.max(stage.clientWidth, 900) * dpr() * 1.6), 1800, 4000);
+  try {
+    const [A, B] = await Promise.all([renderFor(cmpA.value, W), renderFor(cmpB.value, W)]);
+    if (job !== C.job) return;
+    C.A = A; C.B = B; C.tA = tint(A, 'rgb(235,40,25)'); C.tB = tint(B, 'rgb(0,150,215)');
+    C.dx = C.dy = 0; C.zoom = 1;
+    C.canvas = document.createElement('canvas'); stage.innerHTML = ''; stage.appendChild(C.canvas);
+    compose(); cmpPlace();
+  } catch (e) { if (job === C.job) stage.innerHTML = '<div class="spin">Couldn’t render these sheets.</div>'; }
+}
+function compose() {
+  if (!C.canvas || !C.A) return;
+  const c = C.canvas, w = Math.max(C.A.width, C.B.width), h = Math.max(C.A.height, C.B.height);
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  const x = c.getContext('2d');
+  x.globalCompositeOperation = 'source-over'; x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+  if (C.mode === 'a') x.drawImage(C.A, 0, 0);
+  else if (C.mode === 'b') x.drawImage(C.B, C.dx, C.dy);
+  else { x.drawImage(C.tA, 0, 0); x.globalCompositeOperation = 'multiply'; x.drawImage(C.tB, C.dx, C.dy); x.globalCompositeOperation = 'source-over'; }
+  $('#nudgeOut').textContent = `${C.dx}, ${C.dy}`;
+}
+function cmpPlace() {
+  const c = C.canvas; if (!c) return;
+  const vw = stage.clientWidth, vh = stage.clientHeight;
+  const f = Math.min(vw / c.width, vh / c.height) * C.zoom, w = c.width * f, h = c.height * f;
+  C.ox = w <= vw ? (vw - w) / 2 : clamp(C.ox, vw - w, 0);
+  C.oy = h <= vh ? (vh - h) / 2 : clamp(C.oy, vh - h, 0);
+  C.w = w;
+  c.style.width = w + 'px'; c.style.height = h + 'px'; c.style.transform = `translate(${C.ox}px,${C.oy}px)`;
+}
+function cmpZoom(z, cx, cy) { const z2 = clamp(z, 1, 16), k = z2 / C.zoom; C.ox = cx - (cx - C.ox) * k; C.oy = cy - (cy - C.oy) * k; C.zoom = z2; cmpPlace(); }
+function nudge(dx, dy, big) {
+  if (!C.canvas) return;
+  const step = Math.max(1, Math.round((big ? 10 : 1) * C.canvas.width / C.w));
+  C.dx += dx * step; C.dy += dy * step;
+  if (C.mode === 'a') setCmpMode('overlay'); else compose();
+}
+function setCmpMode(m) { C.mode = m; $$('#cmpMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === m)); compose(); }
+stage.addEventListener('wheel', e => { e.preventDefault(); const r = stage.getBoundingClientRect(); cmpZoom(C.zoom * Math.exp(-e.deltaY * (e.deltaMode === 1 ? 16 : 1) * (e.ctrlKey ? 0.01 : 0.0018)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+stage.addEventListener('pointerdown', e => {
+  const sx = e.clientX, sy = e.clientY, ox = C.ox, oy = C.oy; stage.classList.add('grabbing');
+  track(e, ev => { C.ox = ox + ev.clientX - sx; C.oy = oy + ev.clientY - sy; cmpPlace(); }, () => stage.classList.remove('grabbing'));
+});
+stage.addEventListener('dblclick', e => { const r = stage.getBoundingClientRect(); if (C.zoom < 1.5) cmpZoom(3, e.clientX - r.left, e.clientY - r.top); else { C.zoom = 1; cmpPlace(); } });
+new ResizeObserver(() => { if (C.open) cmpPlace(); }).observe(stage);
+$('#cmpMode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setCmpMode(b.dataset.m); });
+$$('[data-n]').forEach(b => b.addEventListener('click', e => { const [x, y] = b.dataset.n.split(',').map(Number); nudge(x, y, e.shiftKey); }));
+$('#nudgeReset').addEventListener('click', () => { C.dx = C.dy = 0; compose(); });
+cmpA.addEventListener('change', buildCompare); cmpB.addEventListener('change', buildCompare);
+$('#cmpSwap').addEventListener('click', () => { const a = cmpA.value; cmpA.value = cmpB.value; cmpB.value = a; buildCompare(); });
+$('#cmpClose').addEventListener('click', closeCompare);
+$('#cmpBtn').addEventListener('click', () => openCompare());
+
+/* ---------- export ---------- */
+// Inside claude.ai files are offered through the viewer's downloads capability; anywhere else, a normal browser download.
+let DL = null;
+const dlReady = inArtifact ? window.claude.use('downloads').then(d => (DL = d)).catch(() => null) : Promise.resolve(null);
+async function saveFile(filename, data) {
+  await dlReady;
+  if (DL) {
+    try { await DL.save({ filename, data }); toast('Saved ' + filename); }
+    catch (e) {
+      const code = e && e.code;
+      if (code === 'declined') return;
+      toast(code === 'rate_limited' ? 'A save prompt is already open.' : 'Saving files isn’t available here. Use Copy summary instead.', 4000);
+    }
+    return;
+  }
+  try {
+    const type = /\.pdf$/i.test(filename) ? 'application/pdf' : /\.csv$/i.test(filename) ? 'text/csv;charset=utf-8' : 'application/octet-stream';
+    const blob = data instanceof Blob ? data : new Blob([data], { type });
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    toast('Saved ' + filename);
+  } catch (e) { toast('Couldn’t save the file. Use Copy summary instead.', 4000); }
+}
+function loadScript(src) {
+  return new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = () => rej(new Error('The PDF writer didn’t load. Check your connection.')); document.head.appendChild(el); });
+}
+const today = () => new Date().toISOString().slice(0, 10);
+async function pageImage(s, p, W) {
+  const pg = await s.pdf.getPage(p), rot = (pg.rotate + s.rot) % 360;
+  const vp0 = pg.getViewport({ scale: 1 }), vpR = pg.getViewport({ scale: 1, rotation: rot });
+  const sc = Math.min(W / Math.max(vpR.width, vpR.height), Math.sqrt(14e6 / (vpR.width * vpR.height)));
+  const vp = pg.getViewport({ scale: sc, rotation: rot });
+  const c = document.createElement('canvas'); c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  await pg.render({ canvasContext: ctx, viewport: vp }).promise;
+  const list = s.marks[p] || [];
+  if (list.length) {
+    const f = c.width / vpR.width, px = c.width / 1400;
+    const str = `<svg xmlns="http://www.w3.org/2000/svg" width="${c.width}" height="${c.height}" viewBox="0 0 ${vpR.width} ${vpR.height}" preserveAspectRatio="none">${marksSVG({ vp0, vpR }, list, f, px, mmPerPt(s))}</svg>`;
+    const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(str);
+    await img.decode(); ctx.drawImage(img, 0, 0, c.width, c.height);
+  }
+  return c;
+}
+async function exportReport() {
+  const btn = $('#exportBtn');
+  if (!S.sheets.length) { toast('Add drawings before exporting a report.'); return; }
+  btn.disabled = true; toast('Building the report…', 60000);
+  try {
+    if (!window.jspdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const pins = allPins(), open = pins.filter(x => !x.m.resolved).length;
+    const { pages, files } = countPages();
+    let y = 20;
+    const ensure = h => { if (y + h > 282) { doc.addPage('a4', 'portrait'); y = 20; } };
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(20); doc.text('Drawing review report', 15, y); y += 7;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(95);
+    doc.text(`${fmtDate(new Date())}  |  ${files} files, ${pages} pages  |  ${pins.length} comments (${open} open)`, 15, y); y += 5;
+    if (S.reviewer || S.org) doc.text(`Reviewed by ${[S.reviewer, S.org].filter(Boolean).join(', ')}`, 15, y);
+    y += 6;
+    const section = t => { ensure(14); doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(20); doc.text(t, 15, y); y += 2.5; doc.setDrawColor(190); doc.line(15, y, 195, y); y += 5.5; };
+    section('Sheets');
+    doc.setFontSize(8.5); doc.setTextColor(110); doc.setFont('helvetica', 'bold');
+    doc.text('SHEET', 15, y); doc.text('PAGES', 112, y); doc.text('STATUS', 128, y); doc.text('OPEN', 172, y); doc.text('RESOLVED', 183, y); y += 5;
+    for (const s of S.sheets) {
+      ensure(6);
+      const sp = Object.values(s.marks).flat().filter(m => m.type === 'pin');
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(25);
+      doc.text(doc.splitTextToSize(s.name, 94)[0], 15, y); doc.text(s.lock ? `${s.page}/${s.pages}` : String(s.pages), 112, y);
+      doc.setTextColor(...STATUS[s.status].rgb); doc.setFont('helvetica', 'bold'); doc.text(STATUS[s.status].label, 128, y);
+      doc.setTextColor(25); doc.setFont('helvetica', 'normal');
+      doc.text(String(sp.filter(m => !m.resolved).length), 172, y); doc.text(String(sp.filter(m => m.resolved).length), 183, y);
+      y += 6;
+    }
+    y += 4; section('Comments');
+    if (!pins.length) { doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(95); doc.text('No comments recorded.', 15, y); y += 6; }
+    for (const { s, page, m } of pins) {
+      const lines = doc.splitTextToSize(m.text || '(no comment written)', 92);
+      ensure(lines.length * 4.4 + 3);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(25); doc.text('#' + m.n, 15, y);
+      doc.setFont('helvetica', 'normal'); doc.text(doc.splitTextToSize(s.name, 52)[0] + (multi(s) ? ` p${page}` : ''), 25, y);
+      doc.text(lines, 82, y);
+      doc.setTextColor(...(m.resolved ? [110, 118, 126] : STATUS.revise.rgb)); doc.setFont('helvetica', 'bold'); doc.text(m.resolved ? 'Resolved' : 'Open', 178, y);
+      y += lines.length * 4.4 + 2.5;
+    }
+    for (const s of S.sheets) {
+      for (const p of Object.keys(s.marks).map(Number).sort((a, b) => a - b)) {
+        const list = s.marks[p]; if (!list || !list.length) continue;
+        toast(`Rendering ${pageLabel(s, p)}…`, 60000);
+        const c = await pageImage(s, p, 2600);
+        doc.addPage('a3', 'landscape');
+        const PW = 420, PH = 297;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(20);
+        doc.text(s.lock ? `${s.name}  (page ${p} of ${s.pages})` : s.name + (s.pages > 1 ? `  (page ${p} of ${s.pages})` : ''), 10, 12);
+        doc.setTextColor(...STATUS[s.status].rgb); doc.text(STATUS[s.status].label, PW - 10, 12, { align: 'right' });
+        const pp = list.filter(m => m.type === 'pin').sort((a, b) => a.n - b.n);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+        let lines = pp.flatMap(m => doc.splitTextToSize(`#${m.n}${m.resolved ? ' (resolved)' : ''}  ${m.text || '(no comment written)'}`, PW - 20));
+        if (lines.length > 12) lines = lines.slice(0, 11).concat(['… see the comments list for the rest']);
+        const notesH = lines.length ? lines.length * 4.2 + 5 : 0;
+        const top = 17, aw = PW - 20, ah = PH - top - 8 - notesH, r = Math.min(aw / c.width, ah / c.height), w = c.width * r, h = c.height * r;
+        doc.addImage(c.toDataURL('image/jpeg', 0.86), 'JPEG', 10 + (aw - w) / 2, top, w, h);
+        doc.setDrawColor(200); doc.rect(10 + (aw - w) / 2, top, w, h);
+        let yy = top + h + 6; doc.setTextColor(30);
+        lines.forEach(l => { doc.text(l, 10, yy); yy += 4.2; });
+        c.width = c.height = 1;
+      }
+    }
+    await saveFile(`Drawing review ${today()}.pdf`, doc.output('blob'));
+  } catch (err) { console.error(err); toast('Couldn’t build the report. ' + (err && err.message ? err.message : ''), 5000); }
+  finally { btn.disabled = false; }
+}
+function exportCsv() {
+  const pins = allPins();
+  if (!pins.length) { toast('There are no comments to export yet.'); return; }
+  const rows = [['No', 'Sheet', 'Page', 'Sheet status', 'Comment', 'Comment status', 'Created']]
+    .concat(pins.map(({ s, page, m }) => [m.n, s.name, page, STATUS[s.status].label, m.text || '', m.resolved ? 'Resolved' : 'Open', m.created ? new Date(m.created).toISOString().slice(0, 16).replace('T', ' ') : '']));
+  const csv = '﻿' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  saveFile(`Drawing review comments ${today()}.csv`, csv);
+}
+function summaryText() {
+  const lines = [`Drawing review, ${fmtDate(new Date())}`, ''];
+  for (const s of S.sheets) {
+    lines.push(`${s.name}: ${STATUS[s.status].label}`);
+    for (const { page, m } of allPins().filter(x => x.s === s)) lines.push(`  #${m.n}${multi(s) ? ` (p${page})` : ''} [${m.resolved ? 'resolved' : 'open'}] ${m.text || '(no comment written)'}`);
+  }
+  return lines.join('\n');
+}
+function copySummary() {
+  if (!S.sheets.length) { toast('Add drawings first.'); return; }
+  const text = summaryText();
+  const fallback = () => openDialog(`<h2>Review summary</h2><p>Copying was blocked here. Select the text below and copy it.</p><textarea id="sumText" readonly></textarea><div class="row"><button class="btn" type="button" data-close>Close</button></div>`, d => { const t = $('#sumText', d); t.value = text; t.select(); });
+  try { navigator.clipboard.writeText(text).then(() => toast('Review summary copied. Paste it into an email or a document.'), fallback); }
+  catch (e) { fallback(); }
+}
+
+/* ---------- marked-up PDF: markups written as standard PDF annotations ---------- */
+// Each markup becomes a real annotation (Ink, Square with cloudy border, Line, FreeText, Text note, Stamp)
+// with its own appearance, so it opens in Acrobat, Bluebeam, Edge and Chrome and stays editable there.
+// "Burn in" draws the same appearances into the page instead, for viewers that hide annotations.
+const fm = n => String(Math.round(n * 1000) / 1000);
+const rgbOf = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+const pdfDate = d => { const z = n => String(n).padStart(2, '0'); return `D:${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}`; };
+const winAnsi = t => String(t).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/…/g, '...').replace(/[^\x20-\x7e\xa0-\xff]/g, '?');
+function arcBeziers(cx, cy, r, a0, a1) {
+  const kk = 4 / 3 * Math.tan((a1 - a0) / 4);
+  return [[cx + r * Math.cos(a0) - kk * r * Math.sin(a0), cy + r * Math.sin(a0) + kk * r * Math.cos(a0)],
+    [cx + r * Math.cos(a1) + kk * r * Math.sin(a1), cy + r * Math.sin(a1) - kk * r * Math.cos(a1)],
+    [cx + r * Math.cos(a1), cy + r * Math.sin(a1)]];
+}
+function cloudCurves(x0, y0, x1, y1, k) {
+  // Same scallops as the on-screen cloud, as cubic curves in y-down page units.
+  const r = Math.max(5 * k, Math.min(Math.min(x1 - x0, y1 - y0) / 4, 18 * k)), out = [];
+  const norm = a => { while (a <= -Math.PI) a += 2 * Math.PI; while (a > Math.PI) a -= 2 * Math.PI; return a; };
+  const edge = (ax, ay, bx, by) => {
+    const L = Math.hypot(bx - ax, by - ay), n = Math.max(1, Math.round(L / (r * 1.6))), ux = (bx - ax) / L, uy = (by - ay) / L, nx = uy, ny = -ux;
+    for (let i = 0; i < n; i++) {
+      const A = [ax + (bx - ax) * i / n, ay + (by - ay) * i / n], B = [ax + (bx - ax) * (i + 1) / n, ay + (by - ay) * (i + 1) / n];
+      const ch = L / n, rr = ch * 0.62, d = Math.sqrt(rr * rr - ch * ch / 4), cx = (A[0] + B[0]) / 2 - nx * d, cy = (A[1] + B[1]) / 2 - ny * d;
+      const aA = Math.atan2(A[1] - cy, A[0] - cx), aM = Math.atan2(ny, nx), aB = Math.atan2(B[1] - cy, B[0] - cx);
+      const m1 = aA + norm(aM - aA), m2 = m1 + norm(aB - aM);
+      out.push(arcBeziers(cx, cy, rr, aA, m1), arcBeziers(cx, cy, rr, m1, m2));
+    }
+  };
+  edge(x0, y0, x1, y0); edge(x1, y0, x1, y1); edge(x1, y1, x0, y1); edge(x0, y1, x0, y0);
+  return { start: [x0, y0], curves: out, r };
+}
+function writeMark(X, m, s) {
+  const { vp0, k } = X, L = PDFLib;
+  const pt = (x, y) => vp0.convertToPdfPoint(x, y);
+  const col = rgbOf(m.color || '#e0301e'), rg = col.map(fm).join(' ');
+  const lw = Math.max(0.8, X.size / 650);
+  const bbox = (pts, pad) => { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]); return [Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) + pad, Math.max(...ys) + pad]; };
+  const enc = (font, t) => font.encodeText(winAnsi(t)).toString();
+  const common = { C: col, T: L.PDFHexString.fromText(S.reviewer || 'Plan Table'), M: L.PDFString.of(pdfDate(new Date(m.created || Date.now()))), NM: L.PDFString.of('pt-' + m.id), F: 4 };
+  let dict, ops, rect, fonts = false, gs = false;
+  if (m.type === 'pen') {
+    const P2 = m.pts.map(p => pt(p[0], p[1]));
+    rect = bbox(P2, lw * 2);
+    ops = `${rg} RG ${fm(lw)} w 1 J 1 j ${fm(P2[0][0])} ${fm(P2[0][1])} m ` + P2.slice(1).map(p => `${fm(p[0])} ${fm(p[1])} l`).join(' ') + ' S';
+    dict = { Subtype: 'Ink', InkList: [P2.flat()], BS: { W: lw } };
+  } else if (m.type === 'rect' || m.type === 'cloud') {
+    const x0 = Math.min(m.pts[0][0], m.pts[1][0]), x1 = Math.max(m.pts[0][0], m.pts[1][0]), y0 = Math.min(m.pts[0][1], m.pts[1][1]), y1 = Math.max(m.pts[0][1], m.pts[1][1]);
+    if (m.type === 'rect') {
+      const c = [pt(x0, y0), pt(x1, y1)], b = bbox(c, 0);
+      rect = bbox(c, lw);
+      ops = `${rg} RG ${fm(lw)} w ${fm(b[0])} ${fm(b[1])} ${fm(b[2] - b[0])} ${fm(b[3] - b[1])} re S`;
+      dict = { Subtype: 'Square', BS: { W: lw } };
+    } else {
+      const cl = cloudCurves(x0, y0, x1, y1, k);
+      const s0 = pt(...cl.start);
+      ops = `${rg} RG ${fm(lw)} w 1 j ${fm(s0[0])} ${fm(s0[1])} m ` + cl.curves.map(c => c.map(p => pt(p[0], p[1]).map(fm).join(' ')).join(' ') + ' c').join(' ') + ' h S';
+      rect = bbox([pt(x0, y0), pt(x1, y1)], cl.r + lw);
+      dict = { Subtype: 'Square', BS: { W: lw }, BE: { S: 'C', I: 1 } };
+    }
+  } else if (m.type === 'arrow' || m.type === 'measure') {
+    const a = pt(...m.pts[0]), b = pt(...m.pts[1]), ang = Math.atan2(b[1] - a[1], b[0] - a[0]), c = Math.cos(ang), sn = Math.sin(ang);
+    if (m.type === 'arrow') {
+      const hl = 16 * k, hw = 6.5 * k, bx = b[0] - hl * c, by = b[1] - hl * sn;
+      ops = `${rg} RG ${rg} rg ${fm(lw)} w 1 J ${fm(a[0])} ${fm(a[1])} m ${fm(bx)} ${fm(by)} l S ${fm(b[0])} ${fm(b[1])} m ${fm(bx - hw * sn)} ${fm(by + hw * c)} l ${fm(bx + hw * sn)} ${fm(by - hw * c)} l h f`;
+      rect = bbox([a, b], hl);
+      dict = { Subtype: 'Line', L: [a[0], a[1], b[0], b[1]], LE: ['None', 'ClosedArrow'], IC: col, BS: { W: lw } };
+    } else {
+      const label = fmtLen(dist(m.pts[0], m.pts[1]) * X.mm), fs = 12.5 * k, tk = 7 * k, nx = -sn * tk, ny = c * tk;
+      let ta = ang; if (ta > Math.PI / 2) ta -= Math.PI; if (ta < -Math.PI / 2) ta += Math.PI;
+      const tw = X.fontB.widthOfTextAtSize(winAnsi(label), fs), mx = (a[0] + b[0]) / 2 - Math.sin(ta) * 4 * k, my = (a[1] + b[1]) / 2 + Math.cos(ta) * 4 * k;
+      const ct = Math.cos(ta), st = Math.sin(ta);
+      ops = `${rg} RG ${fm(lw)} w ${fm(a[0])} ${fm(a[1])} m ${fm(b[0])} ${fm(b[1])} l S ${fm(a[0] - nx)} ${fm(a[1] - ny)} m ${fm(a[0] + nx)} ${fm(a[1] + ny)} l S ${fm(b[0] - nx)} ${fm(b[1] - ny)} m ${fm(b[0] + nx)} ${fm(b[1] + ny)} l S ` +
+        `q ${fm(ct)} ${fm(st)} ${fm(-st)} ${fm(ct)} ${fm(mx)} ${fm(my)} cm 1 1 1 rg ${fm(-tw / 2 - 2 * k)} ${fm(-2 * k)} ${fm(tw + 4 * k)} ${fm(fs + 2 * k)} re f ${rg} rg BT /F2 ${fm(fs)} Tf ${fm(-tw / 2)} ${fm(1.5 * k)} Td ${enc(X.fontB, label)} Tj ET Q`;
+      rect = bbox([a, b], fs + tk + 4 * k);
+      fonts = true;
+      dict = { Subtype: 'Line', L: [a[0], a[1], b[0], b[1]], LE: ['Butt', 'Butt'], IT: 'LineDimension', Cap: true, BS: { W: lw }, Contents: L.PDFHexString.fromText(label) };
+    }
+  } else if (m.type === 'text') {
+    const lines = String(m.text).split('\n'), fs = m.size, top = pt(...m.pts[0]);
+    const w = Math.max(...lines.map(l => X.fontB.widthOfTextAtSize(winAnsi(l), fs))), h = fs * 1.2 * lines.length;
+    rect = [top[0] - 2, top[1] - h - 2, top[0] + w + 2, top[1] + 2];
+    const body = lines.map((l, i) => `1 0 0 1 ${fm(top[0])} ${fm(top[1] - fs * 0.85 - i * fs * 1.2)} Tm ${enc(X.fontB, l)} Tj`).join(' ');
+    ops = `BT /F2 ${fm(fs)} Tf 2 Tr 1 1 1 RG ${fm(fs * 0.18)} w 1 j ${rg} rg ${body} ET BT /F2 ${fm(fs)} Tf 0 Tr ${rg} rg ${body} ET`;
+    fonts = true;
+    dict = { Subtype: 'FreeText', DA: L.PDFString.of(`/Helv ${fm(fs)} Tf ${rg} rg`), Contents: L.PDFHexString.fromText(m.text), BS: { W: 0 } };
+  } else if (m.type === 'pin') {
+    const [x, y] = pt(...m.pts[0]), cr = m.resolved ? rgbOf('#8a949e').map(fm).join(' ') : rg, num = String(m.n), fs = 11 * k;
+    const cy = y + 20 * k, R = 12 * k, q = R * 0.5523;
+    ops = `${cr} rg 1 1 1 RG ${fm(1.5 * k)} w ${fm(x)} ${fm(y)} m ${fm(x - 9.5 * k)} ${fm(y + 12.5 * k)} l ${fm(x + 9.5 * k)} ${fm(y + 12.5 * k)} l h B ` +
+      `${fm(x + R)} ${fm(cy)} m ${fm(x + R)} ${fm(cy + q)} ${fm(x + q)} ${fm(cy + R)} ${fm(x)} ${fm(cy + R)} c ${fm(x - q)} ${fm(cy + R)} ${fm(x - R)} ${fm(cy + q)} ${fm(x - R)} ${fm(cy)} c ` +
+      `${fm(x - R)} ${fm(cy - q)} ${fm(x - q)} ${fm(cy - R)} ${fm(x)} ${fm(cy - R)} c ${fm(x + q)} ${fm(cy - R)} ${fm(x + R)} ${fm(cy - q)} ${fm(x + R)} ${fm(cy)} c B ` +
+      `1 1 1 rg BT /F2 ${fm(fs)} Tf ${fm(x - X.fontB.widthOfTextAtSize(num, fs) / 2)} ${fm(cy - fs * 0.35)} Td ${enc(X.fontB, num)} Tj ET`;
+    rect = [x - R - 2 * k, y - 2 * k, x + R + 2 * k, cy + R + 2 * k];
+    fonts = true;
+    dict = { Subtype: 'Text', Name: 'Comment', Open: false, Contents: L.PDFHexString.fromText(`#${m.n}${m.resolved ? ' (resolved)' : ''}: ${m.text || ''}`) };
+  } else if (m.type === 'stamp') {
+    const c = [pt(...m.pts[0]), pt(...m.pts[1])], b = bbox(c, 0), w = b[2] - b[0], h = b[3] - b[1];
+    const Ly = stampLayout(m, 0, 0, w, h), sc = rgbOf(Ly.hex).map(fm).join(' ');
+    const line = (yy, fs, font, fname, t) => { const tw = font.widthOfTextAtSize(winAnsi(t), fs); return `BT /${fname} ${fm(fs)} Tf ${fm(b[0] + w / 2 - tw / 2)} ${fm(b[3] - yy)} Td ${enc(font, t)} Tj ET`; };
+    ops = `/GS0 gs 1 1 1 rg ${fm(b[0])} ${fm(b[1])} ${fm(w)} ${fm(h)} re f /GS1 gs ${sc} RG ${sc} rg ${fm(h * 0.035)} w ${fm(b[0] + h * 0.0175)} ${fm(b[1] + h * 0.0175)} ${fm(w - h * 0.035)} ${fm(h - h * 0.035)} re S ` +
+      `${fm(h * 0.012)} w ${fm(b[0] + Ly.in)} ${fm(b[1] + Ly.in)} ${fm(w - 2 * Ly.in)} ${fm(h - 2 * Ly.in)} re S ` +
+      line(Ly.y1, Ly.fs1, X.fontB, 'F2', Ly.title) + ' ' + line(Ly.y2, Ly.fs2, X.fontB, 'F2', Ly.l2) + (Ly.l3 ? ' ' + line(Ly.y3, Ly.fs2 * 0.92, X.font, 'F1', Ly.l3) : '');
+    rect = b; fonts = true; gs = true;
+    dict = { Subtype: 'Stamp', Name: m.status === 'approved' ? 'Approved' : m.status === 'revise' ? 'NotApproved' : 'Final', Contents: L.PDFHexString.fromText(`${STATUS[m.status].label}${m.by ? ' - ' + m.by : ''}${m.date ? ' - ' + m.date : ''}`) };
+  } else return;
+  const ctx = X.doc.context;
+  const res = {};
+  if (fonts) res.Font = { F1: X.font.ref, F2: X.fontB.ref };
+  if (gs) res.ExtGState = { GS0: { Type: 'ExtGState', ca: 0.6 }, GS1: { Type: 'ExtGState', ca: 1 } };
+  const ap = ctx.register(ctx.flateStream(`q ${ops} Q`, { Type: 'XObject', Subtype: 'Form', BBox: rect, Resources: res }));
+  if (X.flatten) { X.flat.push(`q ${X.page.node.newXObject('PtMk', ap).toString()} Do Q`); return; }
+  const annot = ctx.obj(Object.assign({ Type: 'Annot', Rect: rect, AP: { N: ap }, P: X.page.ref, CreationDate: L.PDFString.of(pdfDate(new Date(m.created || Date.now()))) }, common, dict));
+  X.page.node.addAnnot(ctx.register(annot));
+}
+async function buildMarkedPdf(pdf, sheets, flatten) {
+  if (!window.PDFLib) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
+  const doc = await PDFLib.PDFDocument.load(await pdf.getData(), { ignoreEncryption: true, updateMetadata: false });
+  if (doc.isEncrypted) throw new Error(`${sheets[0].base} is password-protected, so markups can’t be saved into it. Use the review report instead.`);
+  const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica), fontB = await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+  const byPage = {};
+  for (const s of sheets) for (const [p, list] of Object.entries(s.marks)) for (const m of list) (byPage[p] ||= []).push({ m, s });
+  let count = 0;
+  for (const [p, items] of Object.entries(byPage)) {
+    const pg = await pdf.getPage(+p), vp0 = pg.getViewport({ scale: 1 }), page = doc.getPage(+p - 1);
+    const X = { doc, page, vp0, font, fontB, flatten, flat: [], size: Math.max(vp0.width, vp0.height), k: Math.max(vp0.width, vp0.height) / 1400, mm: mmPerPt(items[0].s) };
+    for (const { m } of items) { writeMark(X, m); count++; }
+    if (flatten && X.flat.length) {
+      const ctx = doc.context;
+      page.node.wrapContentStreams(ctx.register(ctx.stream('q')), ctx.register(ctx.stream('Q')));
+      page.node.addContentStream(ctx.register(ctx.flateStream(X.flat.join('\n'))));
+    }
+  }
+  doc.setModificationDate(new Date());
+  if (!doc.getProducer()) doc.setProducer('Plan Table');
+  return { doc, count };
+}
+async function exportMarked(scope, flatten) {
+  const btn = $('#exportBtn');
+  const list = scope === 'sel' && S.sel ? S.sheets.filter(s => s.pdf === S.sel.pdf) : S.sheets;
+  if (!list.length) { toast('Add drawings first.'); return; }
+  const groups = new Map();
+  list.forEach(s => { if (!groups.has(s.pdf)) groups.set(s.pdf, []); groups.get(s.pdf).push(s); });
+  btn.disabled = true; toast('Writing markups into the PDF…', 60000);
+  try {
+    const built = [];
+    let total = 0;
+    for (const [pdf, sheets] of groups) {
+      toast(`Writing markups into ${sheets[0].base}…`, 60000);
+      const r = await buildMarkedPdf(pdf, sheets, flatten);
+      total += r.count; built.push({ name: sheets[0].base, doc: r.doc });
+    }
+    const suffix = flatten ? 'marked up (flattened)' : 'marked up';
+    const save = async (name, doc) => saveFile(`${name} - ${suffix}.pdf`, new Blob([await doc.save()], { type: 'application/pdf' }));
+    if (built.length === 1 || scope === 'each') { for (const b of built) await save(b.name, b.doc); }
+    else {
+      const set = await PDFLib.PDFDocument.create();
+      for (const b of built) (await set.copyPages(b.doc, b.doc.getPageIndices())).forEach(p => set.addPage(p));
+      set.setTitle(`Drawing review set ${today()}`); set.setProducer('Plan Table');
+      await save(`Review set ${today()}`, set);
+    }
+    if (!total) toast('Saved. There were no markups to write, so the PDF is unchanged.', 4000);
+  } catch (err) { console.error(err); toast('Couldn’t save the marked-up PDF. ' + (err && err.message ? err.message : ''), 6000); }
+  finally { btn.disabled = false; }
+}
+function markedDialog(preferSel) {
+  if (!S.sheets.length) { toast('Add drawings first.'); return; }
+  const files = countPages().files, sel = S.sel;
+  openDialog(`<h2>Save marked-up PDF</h2>
+    <p>Your markups, comment pins and review stamps are written into the PDF as standard annotations. Acrobat, Bluebeam, Edge and Chrome show them, and they stay editable there.</p>
+    <h3>Which drawings</h3>
+    <div class="choice">
+      ${sel ? `<label><input type="radio" name="scope" value="sel" ${preferSel || files === 1 ? 'checked' : ''}><div><b>Selected file only</b><span id="selName"></span></div></label>` : ''}
+      ${files > 1 ? `<label><input type="radio" name="scope" value="set" ${!(preferSel && sel) ? 'checked' : ''}><div><b>All files as one PDF</b><span>${files} files combined into a single review set</span></div></label>
+      <label><input type="radio" name="scope" value="each"><div><b>All files, one PDF each</b><span>Keeps the original file names</span></div></label>` : ''}
+    </div>
+    <h3>Markups</h3>
+    <div class="choice">
+      <label><input type="radio" name="flat" value="0" checked><div><b>Editable annotations</b><span>Recommended. Others can reply to, move or remove them.</span></div></label>
+      <label><input type="radio" name="flat" value="1"><div><b>Burned into the drawing</b><span>Can’t be changed. Shows in every viewer, even ones that hide comments.</span></div></label>
+    </div>
+    <div class="row"><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="button" id="doMarked">Save PDF</button></div>`, d => {
+    if (sel) $('#selName', d).textContent = sel.base;
+    if (!$('input[name="scope"]:checked', d)) { const f = $('input[name="scope"]', d); if (f) f.checked = true; }
+    $('#doMarked', d).addEventListener('click', () => {
+      const scope = ($('input[name="scope"]:checked', d) || {}).value || 'set', flat = ($('input[name="flat"]:checked', d) || {}).value === '1';
+      closeDialog(); exportMarked(scope, flat);
+    });
+  });
+}
+function exportMenu(anchor) {
+  openMenu(anchor, [{ head: 'Export' },
+    { label: 'Marked-up PDF…', act: () => markedDialog() },
+    { label: 'Review report (PDF)', act: exportReport },
+    { label: 'Comments list (CSV)', act: exportCsv },
+    { label: 'Copy summary to clipboard', act: copySummary }]);
+}
+$('#exportBtn').addEventListener('click', e => exportMenu(e.currentTarget));
+$('#expMarked').addEventListener('click', () => markedDialog(true));
+$('#expMore').addEventListener('click', e => exportMenu(e.currentTarget));
+
+/* ---------- settings ---------- */
+function openSettings() {
+  openDialog(`<h2>Reviewer settings</h2>
+    <p>Shown on review stamps, saved markups and reports. Kept on this device only.</p>
+    <div class="frm"><label for="setName">Your name</label><input class="field" id="setName" autocomplete="name" placeholder="For example: A. Kandel"></div>
+    <div class="frm"><label for="setOrg">Company or team (optional)</label><input class="field" id="setOrg" autocomplete="organization" placeholder="For example: Structural review team"></div>
+    <div class="row"><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="button" id="setSave">Save</button></div>`, d => {
+    $('#setName', d).value = S.reviewer; $('#setOrg', d).value = S.org;
+    $('#setSave', d).addEventListener('click', () => {
+      S.reviewer = $('#setName', d).value.trim(); S.org = $('#setOrg', d).value.trim();
+      store.set('reviewer', S.reviewer); store.set('org', S.org);
+      closeDialog(); toast('Settings saved');
+    });
+    setTimeout(() => $('#setName', d).focus(), 0);
+  });
+}
+$('#settingsBtn').addEventListener('click', openSettings);
+
+/* ---------- dialog & help ---------- */
+const dlg = $('#dlg'), dlgBody = $('#dlgBody');
+function openDialog(html, init) {
+  dlgBody.innerHTML = html; dlg.hidden = false;
+  if (init) init(dlgBody);
+  const f = $('[data-close]', dlgBody); if (f) f.focus();
+}
+function closeDialog() { dlg.hidden = true; dlgBody.innerHTML = ''; }
+dlg.addEventListener('click', e => { if (e.target === dlg || e.target.closest('[data-close]')) closeDialog(); });
+function openHelp() {
+  const row = (k, t) => `<tr><td>${k}</td><td>${t}</td></tr>`;
+  openDialog(`<h2>Plan Table help</h2>
+  <h3>Getting around</h3><table>
+  ${row('Drag title bar', 'Move a sheet. When zoomed out you can drag the drawing itself too.')}
+  ${row('Scroll / pinch', 'Zoom where the pointer is. Drag to pan once zoomed in.')}
+  ${row('Double-click', 'Drawing: zoom to 300% or back to fit. Title bar: maximize or restore.')}
+  ${row('<kbd>G</kbd>', 'Tile every sheet to fit the screen')}${row('<kbd>K</kbd>', 'Link zoom across all sheets')}
+  ${row('Hover (left rail)', 'Choose what follows the cursor: plain pointer, magnifying glass, or crosshair lines. Click the 3× button to change the magnifier strength.')}
+  ${row('<kbd>L</kbd>', 'Magnifying glass on or off')}${row('<kbd>B</kbd>', 'Review panel')}
+  ${row('Zoom', 'Only the sheet you click is zoomed. Turn on Link zoom if you want every sheet to follow.')}
+  ${row('<kbd>+</kbd> <kbd>-</kbd> <kbd>0</kbd>', 'Zoom the selected sheet in, out, or to fit')}
+  ${row('<kbd>[</kbd> <kbd>]</kbd>', 'Previous or next page')}${row('<kbd>Esc</kbd>', 'Restore a maximized sheet, close menus')}</table>
+  <h3>Markup</h3><table>
+  ${TOOLS.map(([, k, l, h]) => row(`<kbd>${k.toUpperCase()}</kbd>`, `<b>${l}.</b> ${escX(h)}`)).join('')}
+  ${row('<kbd>Space</kbd> + drag', 'Pan while a markup tool is active')}
+  ${row('<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd>', 'Undo / redo')}</table>
+  <h3>Review</h3><table>
+  ${row('Status chip', 'Set each sheet to Approved, Approved with comments, or Revise and resubmit. Its menu can also place a review stamp.')}
+  ${row('Review stamp', 'Stamps the outcome on the drawing with your name, company and the date (set them in Settings). Placing one also sets the sheet’s status.')}
+  ${row('Save marked-up PDF', 'Writes markups, comment pins and stamps into the PDF as standard annotations that open in Acrobat, Bluebeam, Edge and Chrome. You can also burn them into the drawing.')}
+  ${row('Compare', 'Overlay two sheets: red is only in the old one, blue only in the new one, black is unchanged. Use the arrows to line them up.')}
+  ${row('⋯ menu', 'Rotate a sheet, set its drawing scale, calibrate with a known length, or split a multi-page PDF into one card per page (and merge it back).')}
+  ${row('Tile to fit', 'Packs sheets in rows so each keeps its own paper shape. A4 portrait and A3 landscape sit side by side without wasted space.')}
+  ${row('Saving', 'Your files, layout, markups and comments are kept in this browser and come back when you reopen the page. They are not uploaded anywhere.')}</table>
+  <div class="row" style="justify-content:space-between;align-items:center"><span style="font-size:11px;color:var(--faint)">Developed by Aarakshya Kandel${inArtifact ? '' : ' · <a href="privacy.html" target="_blank" rel="noopener" style="color:inherit">Privacy</a>'}</span><button class="btn primary" type="button" data-close>Close</button></div>`);
+}
+$('#helpBtn').addEventListener('click', openHelp);
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e => {
+  const typing = e.target.closest && e.target.closest('input,select,textarea,[contenteditable]');
+  if (e.key === 'Escape') {
+    if (!pop.hidden) { closePop(); return; }
+    if (!dlg.hidden) { closeDialog(); return; }
+    if (typing) { e.target.blur(); return; }
+    if (C.open) { closeCompare(); return; }
+  }
+  if (typing || !dlg.hidden) return;
+  if (C.open) {
+    const dirs = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (dirs) { e.preventDefault(); nudge(dirs[0], dirs[1], e.shiftKey); }
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+    const k = e.key.toLowerCase();
+    if (k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+    else if (k === 'y') { e.preventDefault(); redo(); }
+    else if (['=', '+', '-', '_', '0'].includes(k)) {
+      e.preventDefault();
+      if (S.sel) { if (k === '0') fit(S.sel); else zoomCenter(S.sel, k === '-' || k === '_' ? 1 / 1.4 : 1.4); }
+      else toast('Click a sheet first, then zoom. Only that sheet zooms.', 2200);
+    }
+    return;
+  }
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === ' ') { if (!S.space) { S.space = true; document.body.classList.add('spacepan'); } e.preventDefault(); return; }
+  const k = e.key, lk = k.toLowerCase(), s = S.sel;
+  const tool = !e.shiftKey && TOOLS.find(t => t[1] === lk);
+  if (tool) setTool(tool[0]);
+  else if (lk === 'l') toggleLoupe();
+  else if (lk === 'g') { if (S.sheets.length) tile(true); }
+  else if (lk === 'k') toggleLink();
+  else if (lk === 'b') togglePanel();
+  else if (k === '?') openHelp();
+  else if (!s) return;
+  else if (k === '+' || k === '=') zoomCenter(s, 1.4);
+  else if (k === '-' || k === '_') zoomCenter(s, 1 / 1.4);
+  else if (k === '0') fit(s);
+  else if (k === 'Escape') { if (s.prev) toggleMax(s); }
+  else if (k === 'PageDown' || k === ']') goPage(s, 1);
+  else if (k === 'PageUp' || k === '[') goPage(s, -1);
+  else return;
+  e.preventDefault();
+});
+document.addEventListener('keyup', e => { if (e.key === ' ') { S.space = false; document.body.classList.remove('spacepan'); } });
+window.addEventListener('blur', () => { S.space = false; document.body.classList.remove('spacepan'); });
+
+/* ---------- sample drawing sheets (generated PDFs, A3 landscape) ---------- */
+const W = 1190.55, H = 841.89;
+const n2 = v => String(Math.round(v * 100) / 100);
+const escP = t => t.replace(/[\\()]/g, m => '\\' + m);
+class Pen {
+  constructor() { this.o = []; }
+  r(s) { this.o.push(s); return this; }
+  lw(w) { return this.r(`${w} w`); }
+  sc(g) { return this.r(Array.isArray(g) ? `${g.join(' ')} RG` : `${g} G`); }
+  fc(g) { return this.r(Array.isArray(g) ? `${g.join(' ')} rg` : `${g} g`); }
+  dash(a) { return this.r(a ? `[${a.join(' ')}] 0 d` : '[] 0 d'); }
+  line(a, b, c, d) { return this.r(`${n2(a)} ${n2(b)} m ${n2(c)} ${n2(d)} l S`); }
+  rect(x, y, w, h, op = 'S') { return this.r(`${n2(x)} ${n2(y)} ${n2(w)} ${n2(h)} re ${op}`); }
+  circle(cx, cy, r, op = 'S') {
+    const k = r * 0.5523, p = (...a) => a.map(n2).join(' ');
+    return this.r(`${p(cx + r, cy)} m ${p(cx + r, cy + k, cx + k, cy + r, cx, cy + r)} c ${p(cx - k, cy + r, cx - r, cy + k, cx - r, cy)} c ${p(cx - r, cy - k, cx - k, cy - r, cx, cy - r)} c ${p(cx + k, cy - r, cx + r, cy - k, cx + r, cy)} c ${op}`);
+  }
+  quarter(cx, cy, r, sx, sy) {
+    const k = r * 0.5523, p = (...a) => a.map(n2).join(' ');
+    return this.r(`${p(cx + sx * r, cy)} m ${p(cx + sx * r, cy + sy * k, cx + sx * k, cy + sy * r, cx, cy + sy * r)} c S`);
+  }
+  text(x, y, sz, t, bold) { return this.r(`BT /${bold ? 'F2' : 'F1'} ${sz} Tf ${n2(x)} ${n2(y)} Td (${escP(t)}) Tj ET`); }
+  ctext(cx, y, sz, t, bold) { return this.text(cx - t.length * sz * (bold ? 0.31 : 0.28), y, sz, t, bold); }
+  toString() { return this.o.join('\n'); }
+}
+function buildPdf(streams) {
+  const objs = ['<< /Type /Catalog /Pages 2 0 R >>',
+    `<< /Type /Pages /Kids [${streams.map((_, i) => `${5 + 2 * i} 0 R`).join(' ')}] /Count ${streams.length} >>`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];
+  streams.forEach((cs, i) => {
+    objs.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6 + 2 * i} 0 R >>`);
+    objs.push(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`);
+  });
+  let out = '%PDF-1.4\n'; const offs = [];
+  objs.forEach((o, i) => { offs.push(out.length); out += `${i + 1} 0 obj\n${o}\nendobj\n`; });
+  const xref = out.length;
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n` + offs.map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('');
+  out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  const u = new Uint8Array(out.length);
+  for (let i = 0; i < out.length; i++) u[i] = out.charCodeAt(i) & 255;
+  return u;
+}
+const GX = [110, 268, 426, 584, 742, 900], GY = [130, 300, 470, 640];
+const RED = [0.76, 0.21, 0.12], BLUE = [0.05, 0.36, 0.72];
+function frame(p, m) {
+  const x = W - 230, xr = W - 30;
+  const lab = (tx, ty, t) => p.fc(0.45).text(tx, ty, 5.5, t.toUpperCase()).fc(0);
+  p.sc(0).fc(0).dash().lw(1.6).rect(20, 20, W - 40, H - 40).lw(0.6).rect(30, 30, W - 60, H - 60).lw(0.8).line(x, 30, x, H - 30);
+  p.line(x, 700, xr, 700); lab(x + 8, H - 44, 'Project');
+  p.text(x + 8, H - 62, 11, 'RIVERSIDE CLINIC', true).text(x + 8, H - 76, 11, 'EXTENSION', true).fc(0.45).text(x + 8, H - 92, 7, 'Sample project for demonstration').fc(0);
+  p.line(x, 440, xr, 440); lab(x + 8, 688, 'Notes');
+  ['1. All dimensions in millimetres.', '2. Do not scale from this drawing.', '3. Read with structural and', '    services drawings.', '4. Report discrepancies to the', '    architect before work starts.']
+    .forEach((t, i) => p.text(x + 8, 672 - i * 11, 7, t));
+  p.line(x, 330, xr, 330); lab(x + 8, 428, 'Revisions'); p.lw(0.4).line(x, 418, xr, 418).lw(0.8);
+  m.revs.forEach((rv, i) => { const y = 405 - i * 13; p.text(x + 8, y, 7, rv[0], true).text(x + 30, y, 7, rv[1]).text(x + 78, y, 7, rv[2]); });
+  p.line(x, 290, xr, 290); p.fc(RED).text(x + 8, 305, 12, m.stamp || 'FOR REVIEW', true).fc(0);
+  p.line(x, 210, xr, 210); lab(x + 8, 280, 'Drawing title'); m.title.forEach((t, i) => p.text(x + 8, 262 - i * 15, 11, t, true));
+  p.line(x, 160, xr, 160).line(x + 100, 160, x + 100, 210); lab(x + 8, 200, 'Drawn'); p.text(x + 8, 174, 9, 'JL'); lab(x + 108, 200, 'Checked'); p.text(x + 108, 174, 9, 'Pending');
+  p.line(x, 110, xr, 110).line(x + 100, 110, x + 100, 160); lab(x + 8, 150, 'Scale @ A3'); p.text(x + 8, 124, 9, '1:100'); lab(x + 108, 150, 'Date'); p.text(x + 108, 124, 9, m.date || '19.09.2026');
+  p.line(x + 140, 30, x + 140, 110); lab(x + 8, 100, 'Sheet no.'); p.text(x + 8, 52, 24, m.no, true); lab(x + 148, 100, 'Rev'); p.text(x + 148, 52, 24, m.rev, true);
+}
+function caption(p, num, title) {
+  p.sc(0).fc(0).dash().lw(1).circle(122, 62, 12).text(118.5, 58, 11, String(num), true).text(144, 62, 12, title, true)
+    .lw(0.6).line(144, 57, 144 + title.length * 7.6, 57).text(144, 45, 8, 'SCALE 1:100');
+}
+function north(p) { p.sc(0).fc(0).lw(0.8).circle(905, 62, 14).r('905 76 m 898 50 l 905 56 l 912 50 l h f').ctext(905, 82, 8, 'N', true); }
+function grid(p, rows = true) {
+  p.sc(0.55).lw(0.4).dash([10, 3, 2, 3]);
+  GX.forEach(x => p.line(x, 85, x, 700));
+  if (rows) GY.forEach(y => p.line(65, y, 945, y));
+  p.dash().lw(0.7).sc(0);
+  GX.forEach((x, i) => { p.fc(1).circle(x, 714, 12, 'B'); p.fc(0).ctext(x, 710.5, 10, 'ABCDEF'[i], true); });
+  if (rows) GY.forEach((y, i) => { p.fc(1).circle(53, y, 12, 'B'); p.fc(0).ctext(53, y - 3.5, 10, String(i + 1), true); });
+}
+function dims(p, y) {
+  p.sc(0).fc(0).lw(0.5).line(GX[0], y, GX[5], y);
+  GX.forEach(x => p.line(x - 4, y - 4, x + 4, y + 4).line(x, y - 6, x, y + 6));
+  for (let i = 0; i < 5; i++) p.ctext((GX[i] + GX[i + 1]) / 2, y + 4, 7, '7200');
+}
+function door(p, x, y, dir) { const r = 30; p.fc(1).rect(x - 1, y - 3, r + 2, 6, 'f').fc(0).lw(0.8).line(x, y, x, y + dir * r).lw(0.4).quarter(x, y, r, 1, dir); }
+function win(p, cx, y) { p.fc(1).rect(cx - 35, y - 1.5, 70, 12, 'f').fc(0).lw(0.5).rect(cx - 35, y, 70, 9).line(cx - 35, y + 4.5, cx + 35, y + 4.5); }
+function floorPlan(p, lower, upper, ghost) {
+  const yA = GY[0], yB = GY[3], c1 = GY[1] + 60, c2 = GY[1] + 110, x0 = GX[0], x1 = GX[5], m = 7.2 / 158;
+  p.sc(ghost ? 0.62 : 0).dash().lw(2.4).rect(x0, yA, x1 - x0, yB - yA).lw(1).rect(x0 + 9, yA + 9, x1 - x0 - 18, yB - yA - 18);
+  p.lw(1.4).line(x0 + 9, c1, x1 - 9, c1).line(x0 + 9, c2, x1 - 9, c2);
+  lower.forEach(([a], i) => { if (i) p.line(a, yA + 9, a, c1); });
+  upper.forEach(([a], i) => { if (i) p.line(a, c2, a, yB - 9); });
+  if (!ghost) {
+    for (let i = 0; i < 5; i++) { const cx = (GX[i] + GX[i + 1]) / 2; win(p, cx, yA); win(p, cx, yB - 9); }
+    lower.forEach(([a]) => door(p, a + 18, c1, -1));
+    upper.forEach(([a]) => door(p, a + 18, c2, 1));
+  }
+  p.fc(ghost ? 0.55 : 0);
+  const label = (cx, cy, n, area) => { p.ctext(cx, cy + 2, 8, n, true); if (!ghost) p.ctext(cx, cy - 10, 7, area.toFixed(1) + ' m²'); };
+  lower.forEach(([a, b, n]) => label((a + b) / 2, (yA + c1) / 2, n, (b - a) * (c1 - yA) * m * m));
+  upper.forEach(([a, b, n]) => label((a + b) / 2, (c2 + yB) / 2, n, (b - a) * (yB - c2) * m * m));
+  p.fc(0.5).ctext((x0 + x1) / 2, (c1 + c2) / 2 - 3, 7, 'CORRIDOR').fc(0).sc(0);
+}
+const GL = [[GX[0], GX[1], 'CONSULT 1'], [GX[1], GX[2], 'CONSULT 2'], [GX[2], GX[3], 'TREATMENT'], [GX[3], GX[4], 'STAFF WC'], [GX[4], GX[5], 'STORE']];
+const GU = [[GX[0], GX[2], 'WAITING'], [GX[2], GX[4], 'RECEPTION'], [GX[4], GX[5], 'PLANT']];
+const OL = [[GX[0], GX[1], 'CONSULT 1'], [GX[1], GX[2], 'CONSULT 2'], [GX[2], GX[4], 'TREATMENT'], [GX[4], GX[5], 'STORE']];
+const OU = [[GX[0], GX[3], 'WAITING'], [GX[3], GX[5], 'RECEPTION']];
+const FL = [[GX[0], GX[2], 'OFFICE'], [GX[2], GX[3], 'MEETING'], [GX[3], GX[5], 'STAFF ROOM']];
+const FU = [[GX[0], GX[1], 'STORE'], [GX[1], GX[3], 'ADMIN'], [GX[3], GX[5], 'OPEN PLAN']];
+function callout(p, x, y, tx, ty, t) { p.lw(0.4).circle(x, y, 1.6, 'f').line(x, y, tx, ty).line(tx, ty, tx + 8, ty).text(tx + 11, ty - 2.5, 7, t); }
+function elevation(p) {
+  const g = 150, l1 = 300, roof = 450, par = 472, x0 = GX[0], x1 = GX[5];
+  p.sc(0.55).lw(0.4).dash([10, 3, 2, 3]); GX.forEach(x => p.line(x, g - 20, x, 640));
+  p.dash().lw(0.7).sc(0); GX.forEach((x, i) => { p.fc(1).circle(x, 654, 12, 'B'); p.fc(0).ctext(x, 650.5, 10, 'ABCDEF'[i], true); });
+  p.lw(2.2).line(70, g, 945, g).lw(0.4); for (let x = 74; x < 940; x += 12) p.line(x, g - 8, x + 8, g);
+  p.lw(1.6).rect(x0, g, x1 - x0, par - g).lw(0.8).line(x0, roof, x1, roof).rect(x0 - 4, par, x1 - x0 + 8, 5);
+  for (let b = 0; b < 5; b++) {
+    const a = GX[b], c = GX[b + 1], mid = (a + c) / 2;
+    [g, l1].forEach((lv, li) => {
+      if (li === 0 && b === 2) { p.lw(1).rect(mid - 32, g, 64, 110).line(mid, g, mid, g + 110).lw(0.8).rect(mid - 60, g + 122, 120, 6); return; }
+      [a + (c - a) / 3, a + 2 * (c - a) / 3].forEach(wx => {
+        p.lw(0.9).rect(wx - 23, lv + 45, 46, 72).lw(0.4).line(wx, lv + 45, wx, lv + 117).line(wx - 23, lv + 97, wx + 23, lv + 97).lw(0.8).line(wx - 27, lv + 43, wx + 27, lv + 43);
+      });
+    });
+  }
+  p.lw(0.5).dash([6, 3]);
+  [[g, 'L00', '+0.000'], [l1, 'L01', '+3.600'], [roof, 'ROOF', '+7.200']].forEach(([y, n, v]) => {
+    p.line(70, y, x0 - 6, y).line(x1 + 6, y, 945, y).dash().text(907, y + 10, 7, n, true).text(907, y + 2.5, 6.5, v).dash([6, 3]);
+  });
+  p.dash();
+  callout(p, 180, 476, 180, 520, 'PPC ALUMINIUM COPING');
+  callout(p, 330, 420, 300, 560, 'FACING BRICKWORK, RED MULTI');
+  callout(p, 640, 405, 640, 600, 'ALUMINIUM WINDOW SYSTEM, GREY');
+  callout(p, 505, 278, 470, 530, 'STEEL CANOPY OVER ENTRANCE');
+  caption(p, 1, 'NORTH ELEVATION');
+}
+function foundation(p) {
+  grid(p); dims(p, 672);
+  const x0 = GX[0], x1 = GX[5], y0 = GY[0], y1 = GY[3];
+  p.sc(0).lw(0.6).dash([5, 3]).rect(x0 - 12, y0 - 12, x1 - x0 + 24, y1 - y0 + 24).rect(x0 + 12, y0 + 12, x1 - x0 - 24, y1 - y0 - 24).dash();
+  GX.forEach((x, i) => GY.forEach((y, j) => {
+    const edge = i === 0 || i === 5 || j === 0 || j === 3, s = edge ? 36 : 44;
+    p.fc(1).lw(1.2).rect(x - s / 2, y - s / 2, s, s, 'B').fc(0).rect(x - 6, y - 6, 12, 12, 'f').text(x + s / 2 + 3, y + s / 2 - 2, 6.5, edge ? 'PF1' : 'PF2', true);
+  }));
+  p.fc(0.4).ctext(505, 385, 8, 'GROUND BEARING SLAB 200 THK ON DPM', true).fc(0);
+  [['PF1', 'PAD FOOTING 1500 x 1500 x 600 DEEP'], ['PF2', 'PAD FOOTING 1800 x 1800 x 700 DEEP'], ['SF1', 'STRIP FOOTING 600 WIDE x 450 DEEP (DASHED)']]
+    .forEach(([k, t], i) => p.text(470, 74 - i * 11, 7, k, true).text(495, 74 - i * 11, 7, t));
+  caption(p, 1, 'FOUNDATION PLAN');
+}
+function hvac(p) {
+  grid(p); floorPlan(p, GL, GU, true);
+  p.sc(BLUE).fc(BLUE).lw(1.2).rect(120, 365, 50, 40).lw(0.4).line(120, 365, 170, 405).line(120, 405, 170, 365);
+  p.text(122, 410, 6.5, 'AHU-01', true);
+  p.lw(1).fc(1).rect(170, 374, 700, 22, 'B').fc(BLUE).text(190, 382.5, 6.5, 'SA 600x300', true);
+  const diff = (cx, cy) => p.lw(0.8).rect(cx - 14, cy - 14, 28, 28).lw(0.4).line(cx - 14, cy - 14, cx + 14, cy + 14).line(cx - 14, cy + 14, cx + 14, cy - 14);
+  GL.forEach(([a, b]) => { const cx = (a + b) / 2; p.lw(0.9).rect(cx - 7, 244, 14, 130); diff(cx, 230); p.text(cx + 18, 228, 6, 'D1  150 l/s').text(cx + 10, 300, 6, '250x200'); });
+  GU.forEach(([a, b]) => { const cx = (a + b) / 2 + 30; p.lw(0.9).rect(cx - 7, 396, 14, 140); diff(cx, 550); p.text(cx + 18, 548, 6, 'D2  220 l/s').text(cx + 10, 470, 6, '300x200'); });
+  p.lw(1).rect(470, 70, 14, 7).text(495, 71, 7, 'SUPPLY AIR DUCTWORK');
+  p.lw(0.6).rect(470, 52, 9, 9).line(470, 52, 479, 61).line(470, 61, 479, 52).text(495, 53, 7, 'CEILING DIFFUSER 600 x 600');
+  p.sc(0).fc(0);
+  caption(p, 1, 'GROUND FLOOR HVAC LAYOUT');
+}
+function sampleFiles() {
+  const sheet = (m, fn) => { const p = new Pen(); fn(p); frame(p, m); return p.toString(); };
+  return [
+    { name: 'A-100 Floor Plans', bytes: buildPdf([
+      sheet({ no: 'A-101', rev: 'P2', title: ['GROUND FLOOR', 'GENERAL ARRANGEMENT'], revs: [['P1', '12.08.26', 'First issue'], ['P2', '19.09.26', 'Room layout revised']] },
+        p => { grid(p); dims(p, 672); floorPlan(p, GL, GU); caption(p, 1, 'GROUND FLOOR PLAN'); north(p); }),
+      sheet({ no: 'A-102', rev: 'P1', title: ['FIRST FLOOR', 'GENERAL ARRANGEMENT'], revs: [['P1', '19.09.26', 'First issue']] },
+        p => { grid(p); dims(p, 672); floorPlan(p, FL, FU); caption(p, 2, 'FIRST FLOOR PLAN'); north(p); })]) },
+    { name: 'A-101 Rev P1 (superseded)', bytes: buildPdf([
+      sheet({ no: 'A-101', rev: 'P1', stamp: 'SUPERSEDED', date: '12.08.2026', title: ['GROUND FLOOR', 'GENERAL ARRANGEMENT'], revs: [['P1', '12.08.26', 'First issue']] },
+        p => { grid(p); dims(p, 672); floorPlan(p, OL, OU); caption(p, 1, 'GROUND FLOOR PLAN'); north(p); })]) },
+    { name: 'A-201 North Elevation', bytes: buildPdf([
+      sheet({ no: 'A-201', rev: 'P1', title: ['NORTH ELEVATION'], revs: [['P1', '19.09.26', 'First issue']] }, elevation)]) },
+    { name: 'S-301 Foundation Plan', bytes: buildPdf([
+      sheet({ no: 'S-301', rev: 'C1', title: ['FOUNDATION PLAN'], revs: [['C1', '05.09.26', 'For coordination']] }, foundation)]) },
+    { name: 'M-401 HVAC Layout', bytes: buildPdf([
+      sheet({ no: 'M-401', rev: 'P3', title: ['GROUND FLOOR', 'HVAC LAYOUT'], revs: [['P1', '01.08.26', 'First issue'], ['P2', '22.08.26', 'AHU relocated'], ['P3', '19.09.26', 'Diffuser rates updated']] }, hvac)]) }
+  ];
+}
+function seedSampleReview() {
+  const by = n => S.sheets.find(s => s.isSample && s.name === n);
+  const T = y => H - y, t0 = Date.now() - 3600e3;
+  const mk = (s, page, o) => { if (s) (s.marks[page] ||= []).push(Object.assign({ id: uid(), color: COLORS[0] }, o)); };
+  const pin = (s, page, x, y, text, resolved) => mk(s, page, { type: 'pin', pts: [[x, T(y)]], n: ++S.pinSeq, text, resolved: !!resolved, created: t0 + S.pinSeq * 60e3 });
+  const a = by('A-100 Floor Plans'), el = by('A-201 North Elevation'), st = by('S-301 Foundation Plan'), m = by('M-401 HVAC Layout');
+  if (a) a.status = 'comments';
+  mk(a, 1, { type: 'cloud', pts: [[420, T(366)], [590, T(124)]] });
+  pin(a, 1, 592, 372, 'Treatment room door swings into the couch bay. Consider a sliding door or move the door to the east wall.');
+  mk(a, 1, { type: 'measure', color: COLORS[1], pts: [[110, T(205)], [268, T(205)]] });
+  if (el) el.status = 'approved';
+  mk(el, 1, { type: 'text', color: COLORS[2], pts: [[120, T(605)]], text: 'Brick sample approved on site 18.09.26', size: W * 0.016 });
+  mk(el, 1, { type: 'stamp', status: 'approved', color: STAMP.approved.hex, pts: [[640, T(132)], [640 + W * 0.2, T(132) + W * 0.2 * 0.34]], by: 'Sample reviewer', org: 'Riverside Clinic team', date: fmtDate(new Date()) });
+  if (st) st.status = 'revise';
+  mk(st, 1, { type: 'cloud', pts: [[396, T(330)], [456, T(270)]] });
+  pin(st, 1, 458, 334, 'PF2 is 1800 x 1800 here but 2000 x 2000 in structural calc rev B. Please confirm and reissue.');
+  if (m) m.status = 'comments';
+  mk(m, 1, { type: 'arrow', pts: [[905, T(680)], [835, T(560)]] });
+  mk(m, 1, { type: 'text', pts: [[500, T(690)]], text: 'Add return air grille in plant room', size: W * 0.016 });
+  pin(m, 1, 298, 568, 'Check D2 rates against the heat load calc.', true);
+}
+async function loadSamples() {
+  for (const f of sampleFiles()) { try { await addPdf(f.name, f.bytes, true, { mmPerPt: 7200 / 158 }); } catch (e) { console.error(e); } }
+  seedSampleReview();
+  S.sheets.forEach(updateStatusChip);
+  S.auto = true; tile(true); refresh();
+  S.sheets.forEach(s => { s.ovF = 0; renderMarks(s); });
+}
+$('#sampleBtn').addEventListener('click', loadSamples);
+
+/* ---------- start ---------- */
+setTool('select');
+setHover(S.hoverMode, true);
+if (innerWidth >= 1100) togglePanel(true);
+if (!window.pdfjsLib) { refresh(); $('#engineErr').hidden = false; $('#sampleBtn').hidden = true; return; }
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+refresh(); updateSB();
+(async () => {
+  if (!(await restoreSession())) await loadSamples();
+  // Installed app: "Open with Plan Table" on a PDF in the file manager hands the files here.
+  if ('launchQueue' in window) window.launchQueue.setConsumer(async params => {
+    if (!params.files || !params.files.length) return;
+    addFiles(await Promise.all(params.files.map(h => h.getFile())));
+  });
+})();
+})();
+</script>
